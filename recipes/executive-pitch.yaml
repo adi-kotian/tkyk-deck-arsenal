@@ -1,0 +1,28 @@
+name: executive-pitch
+description: Cover → section → value → workflow → architecture → closing. Six-beat formal explainer for technically literate executive audiences. Sectioned, with a deliberate closer. Theme-agnostic in principle; ships with default_theme taikyoku.
+default_theme: taikyoku
+
+beats:
+  - purpose: cover
+    density: low
+    notes: "Thesis as the cover. Big Prata headline. Format callout (1920×1080) optional in the bottom-right. On Taikyoku theme: gradient background with subtle breath."
+
+  - purpose: section
+    density: low
+    notes: "Numbered chapter divider. Centered: section number in muted Prata, AccentRule, vertical hairline, Prata heading. On Taikyoku theme: gradient background — section dividers carry the brand handshake just like the cover."
+
+  - purpose: value
+    density: medium
+    notes: "Three claims as cards. Each card: numbered eyebrow, big Archivo title, AccentRule, body. Lays out the thesis from the cover in three parallel claims. On paper canvas (Taikyoku) or white (default)."
+
+  - purpose: workflow
+    density: medium
+    notes: "Sequence of stages or steps. Use the SVG line-draw idiom — single horizontal line with tickmarks, then columns of stage info beneath. Each column: numbered stage eyebrow (with current-stage in accent), accent rule, Archivo title, body. 5 stages is the sweet spot; 4 also works, 6 is a stretch."
+
+  - purpose: architecture
+    density: high
+    notes: "2×2 quadrant grid showing structure. Each quadrant: numbered eyebrow, Prata heading, em-dash-prefixed bullets, hairline top border. The densest beat — earn it with concrete content (file paths, contracts, names)."
+
+  - purpose: closing
+    density: low
+    notes: "Centered Prata headline + one moment per deck of accent-hot (gold on Taikyoku). Small caption explaining the headline or next step. On paper canvas. The closer should feel like a thesis re-stated, not a thank-you slide."

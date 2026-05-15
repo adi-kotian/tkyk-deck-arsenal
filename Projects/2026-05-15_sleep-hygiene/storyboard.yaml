@@ -1,0 +1,58 @@
+# Storyboard — sleep-hygiene pitch
+#
+# Short deck (≤6 slides). Memo has 5 key beats; pitch-classic has 6 slots.
+# Mapping notes:
+#   - Memo beats 1 (sleep loss = tax on judgment) and 2 (the "sleep when
+#     it ships" trade is mispriced) are two angles on the same diagnostic
+#     claim. Merged into a single `problem` slide so the mispricing lands
+#     once, hard, with the judgment-tax evidence as support.
+#   - `demo` slot DROPPED. There is no product, no UI, no before/after to
+#     show. The recipe's fallback is "worked example" — but the worked
+#     example here (three concrete inputs) IS the solution slide. A
+#     separate demo would duplicate or pad. Gap surfaced rather than
+#     papered over.
+#   - `validation` carries memo beat 3 (sleep as a force multiplier on
+#     every other input). Recipe asks for density: high with metrics; we
+#     honor the memo's density_override: low and lean on the leverage
+#     framing instead. Memo has `sources: []` so there are no numbers to
+#     cite anyway — a constraint worth noting if the composer wants to
+#     push back.
+#
+# Result: 5 slides, every slot earns its keep, no padding, no softening.
+
+memo: ./memo.md
+memo_version: 1
+status: approved
+
+recipe: pitch-classic
+theme: taikyoku
+mix: false
+
+# Recipe slots used: cover, problem, solution, validation, ask.
+# Recipe slot DROPPED: demo (see header note).
+
+content:
+  cover:
+    key_message: "Sleep is the highest-leverage performance investment a founder can make — and unlike most edges, it compounds."
+    eyebrow: "For operators who cut sleep first"
+    notes: "Cover-shaped, lots of whitespace. Thesis as a flat statement, not a question or tagline. Operator-to-operator register from line one — no wellness vocabulary, no exclamation, no stock-photo bedroom."
+
+  problem:
+    key_message: "An extra waking hour at 70% capacity costs more than the rested hour it would have bought you tomorrow."
+    notes: "One claim, landed once. Frame it as mispriced trade, not as a health warning. Underneath, surface the judgment-tax evidence from memo beat 1 — mild chronic restriction (6h) measurably degrades attention, working memory, and risk calibration, and the deficit is invisible from the inside. The reader should recognize their own rationalization. No bullet stack; one paragraph or one sentence with a supporting line. Avoid 'studies show' — say what the studies show."
+
+  solution:
+    key_message: "Hygiene beats heroics. Three boring inputs do most of the work."
+    bullets:
+      - "Consistent wake time"
+      - "Light exposure in the first hour"
+      - "Hard caffeine cutoff"
+    notes: "Concrete and unglamorous on purpose. Don't dress this up — the contrarian move is that the answer is unsexy. Skip Oura-ring / mattress / supplement framing per memo's out-of-scope. The three inputs are the whole protocol; resist the urge to add a fourth."
+
+  validation:
+    key_message: "Sleep is the substrate every other input multiplies against. Skip it and you're tuning a guitar with no strings."
+    notes: "Density stays low (memo override) even though recipe asks for high. No metrics available — memo has sources: []. Lean on the multiplier framing from memo beat 3: caffeine, exercise, diet, therapy all return more on a rested brain. The reader should leave thinking 'this is the input under all my other inputs,' not 'here are some statistics.' If composer wants a number, flag it back — we'd need to add a source."
+
+  ask:
+    key_message: "Pick one habit. Ship it tonight."
+    notes: "The whole deck exists for this slide. Do not soften — no 'consider,' no 'might want to,' no 'when you have time.' Concrete and timed: tonight, not this week. One habit, audience picks which (the three from the solution slide are the menu). Avoid listing them again here — that turns the ask into a quiz. The slide should feel like a closing line, not a recap."

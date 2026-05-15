@@ -1,0 +1,20 @@
+name: explainer
+description: Cover → value → workflow → architecture. Internal documentation or walkthrough arc — for explaining how a thing works to a technically literate audience.
+default_theme: null
+
+beats:
+  - purpose: cover
+    density: low
+    notes: "Thesis as the cover. For internal/explainer decks, the thesis is usually 'X is the right approach because Y.' Sharp, declarative."
+
+  - purpose: value
+    density: medium
+    notes: "Why this approach matters. Two or three load-bearing claims. Aim for parallelism (e.g., 'faster, more consistent, easier to audit')."
+
+  - purpose: workflow
+    density: medium
+    notes: "Sequence of stages or steps. Numbered or arrow-connected. Each stage one line."
+
+  - purpose: architecture
+    density: high
+    notes: "Where things live, what talks to what. Directory tree + agent contracts is one good shape. Avoid abstract diagrams when concrete works."

@@ -1,0 +1,53 @@
+# Storyboard — Deck Arsenal 2 tour
+# Recipe: explainer (cover → value → workflow → architecture)
+# Memo: ./memo.md @ version 1, approved
+# Theme: null (intentional — Taikyoku ships after Phase 5; for first render,
+#   the composer will fall back to open-slide's reference theme or a
+#   placeholder. Surface this at compose time.)
+
+memo: ./memo.md
+memo_version: 1
+status: approved
+
+recipe: explainer
+theme: null
+mix: false
+
+content:
+
+  cover:
+    key_message: "Deck Arsenal 2 — same workflow, new engine."
+    eyebrow: "Internal walkthrough · v1"
+    notes: "One sentence, generous whitespace, accent strip at bottom. Cover should feel declarative, not promotional."
+
+  value:
+    key_message: "The workflow was right; the rendering substrate wasn't."
+    bullets:
+      - "Workflow continuity — five gated stages, filesystem-as-state-machine."
+      - "Engine swap — open-slide replaces the vendored HTML stitcher; pinned at @open-slide/core@1.3.0."
+      - "Universal memo — one document feeds deck, minutes, and one-pager."
+    sources:
+      - "../CLAUDE.md"
+    notes: "Three parallel claims. Keep them roughly equal-length. No 'imagine if' framing."
+
+  workflow:
+    key_message: "Five stages: order → memo → storyboard → compose → finalize."
+    bullets:
+      - "Order — production brief lands in Inbox/ or inline via /da2-new."
+      - "Memo — universal context document. APPROVAL GATE."
+      - "Storyboard — recipe + per-deck content. APPROVAL GATE."
+      - "Compose — composer writes index.tsx, opens browser editor."
+      - "Finalize — HTML and PDF exports land in Projects/<slug>/exports/."
+    notes: "Show as a vertical or horizontal sequence. Each stage one line. Approval gates need visual weight — small badge or color hit."
+
+  architecture:
+    key_message: "The filesystem is the state machine; the engine is vendored."
+    bullets:
+      - "engine/ holds the open-slide monorepo, pinned and untouched except one config file."
+      - "Projects/<slug>/ holds order, memo, storyboard, slide source (index.tsx), assets, sources, artifacts, exports — flat."
+      - "recipes/ holds reusable storyboard templates; themes/ holds open-slide-discovered theme markdown."
+      - "agents (memo, storyboard) live at .claude/agents/; commands (/da2-new, /da2-advance) at .claude/commands/."
+    sources:
+      - "../CLAUDE.md"
+      - "../ENGINE_INVESTIGATION.md"
+    notes: "Two-column layout: directory tree on the left (use a monospace block), agent/command contracts on the right (cards). Highest-density beat in the deck — it's earning its keep as the closer."

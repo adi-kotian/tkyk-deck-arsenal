@@ -1,0 +1,28 @@
+name: pitch-classic
+description: Cover → problem → solution → demo → validation → ask. The classic six-beat pitch arc.
+default_theme: null  # no default — the storyboard must specify a theme
+
+beats:
+  - purpose: cover
+    density: low
+    notes: "One-sentence thesis as the deck's first impression. No tagline. Cover-shaped: lots of whitespace."
+
+  - purpose: problem
+    density: medium
+    notes: "One stat or anecdote, not a list. Bring the audience into the gap. The reader should feel the problem, not just read about it."
+
+  - purpose: solution
+    density: medium
+    notes: "What the thing is, in concrete terms. Not how it works yet — that's demo."
+
+  - purpose: demo
+    density: medium
+    notes: "Screenshot, annotated UI, or a short before/after. Show, don't tell. If no visuals available, fall back to a worked example."
+
+  - purpose: validation
+    density: high
+    notes: "Metrics if available; otherwise customer quotes, case study, or external recognition. Numbers preferred."
+
+  - purpose: ask
+    density: low
+    notes: "The one thing the audience should do after this deck. Concrete, with a timeline. Avoid 'thoughts?' as the ask."

@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Build / tooling output
+dist/
+.turbo/
+.next/
+.vite/
+*.tsbuildinfo
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+
+# Editor scratch
+~$*

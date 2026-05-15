@@ -1,0 +1,116 @@
+---
+description: Detect a Deck Arsenal 2 project's current stage from its filesystem and run the next stage. The "what's next" button — one stage per invocation.
+---
+
+# /da2-advance
+
+Look at a project folder and run the next stage based on what files
+exist. This is the filesystem-as-state-machine in action.
+
+## Procedure
+
+### 1. Identify the project
+
+If the user named a project (slug, folder name, or path), use that.
+Otherwise, list `Projects/*/` (skip `Projects/README.md`), show
+modification times, and ask via `AskUserQuestion` which one. Default to
+the most recently modified.
+
+### 2. Detect the current stage
+
+Inspect the project folder and the frontmatter of any state files:
+
+| State | Files / frontmatter | Next action |
+| --- | --- | --- |
+| Order only | `order.md` present, no `memo.md` | Dispatch `memo` subagent |
+| Memo drafted | `memo.md` present, frontmatter `status: draft` | Stop — ask for approve / revise |
+| Memo approved, no storyboard | `memo.md` with `status: approved`, no `storyboard.yaml` | Dispatch `storyboard` subagent |
+| Storyboard drafted | `storyboard.yaml` with `status: draft` | Stop — ask for approve / revise |
+| Storyboard approved, no slide | `storyboard.yaml` with `status: approved`, no `index.tsx` | Dispatch `compose-deck` subagent, then open browser |
+| Composed, not finalized | `index.tsx` present, no `exports/deck.html` or `exports/deck.pdf` | Tell the user to run `/da2-finalize` when satisfied with the rendered deck. |
+| Finalized | `exports/deck.html` or `exports/deck.pdf` present | Tell the user the project is finalized; suggest derived artifacts (Phase 5: `memo-to-minutes`, `memo-to-one-pager`). |
+
+Phase 3 covers compose. Phase 4 (finalize) is reached via `/da2-finalize`,
+not by `/da2-advance` — `/da2-advance` just tells the user that's the
+next move. Phase 5 (derived artifacts) is not shipped yet — surface that
+and stop if detection lands there.
+
+### 3. Dispatch and gate
+
+#### Draftable stages (memo / storyboard not yet written)
+
+- Dispatch the relevant subagent via the `Agent` tool with the
+  appropriate `subagent_type`. Pass the project path and any feedback
+  context.
+- After it returns, present the artifact summary to the user.
+- End with the structured approval prompt for that stage.
+
+#### Compose stage (storyboard approved, no slide)
+
+- Dispatch the `compose-deck` subagent. Pass the project path. The
+  subagent reads memo + storyboard + theme + slide-authoring contract,
+  writes `Projects/<slug>/index.tsx`, returns a summary.
+- After it returns, **invoke the open script** via Bash:
+  `./scripts/da2-open.sh <slug>` (with the slug being the project's
+  folder name, e.g. `2026-05-14_da2-tour`).
+- The script checks the dev server is up and opens
+  `http://localhost:5173/s/<slug>`. If the dev server isn't running, the
+  script prints instructions and exits non-zero — surface that to the
+  user so they can start `pnpm dev`.
+- Append a log entry to `log.md`: `<YYYY-MM-DD HH:MM> composed via /da2-advance`.
+
+There is **no approval gate after compose**. Editing happens in the
+browser via open-slide's inspector. The user reaches "approval" by
+choosing to run `/da2-finalize` (Phase 4) when satisfied.
+
+#### Approval-pending stages (status: draft)
+
+Don't dispatch. Just present the current state and ask:
+
+> The <memo|storyboard> at `<path>` is currently `status: draft`. Reply
+> **`approve <memo|storyboard>`** to advance, or describe what to revise.
+
+### 4. Approval phrase detection
+
+Match case-insensitively. Accept:
+- For memo: `approve memo`, `approved memo`, `memo approved`
+- For storyboard: `approve storyboard`, `approved storyboard`, `storyboard approved`
+
+On approval:
+- Edit the relevant file's frontmatter: `status: draft` → `status: approved`.
+- Append a log entry to `log.md`: `<YYYY-MM-DD HH:MM> approved <stage>`.
+- Tell the user to run `/da2-advance` again for the next stage. **Do not
+  auto-chain.**
+
+On revision request:
+- Re-dispatch the relevant subagent with the user's message as the
+  revision feedback.
+- Repeat from step 3.
+
+### 5. Upstream-gap routing
+
+If the storyboard subagent returns flagging a memo-level issue, present:
+
+> The storyboard subagent surfaced a memo-level issue: <summary>. Reply
+> **`yes, revise memo`** to re-dispatch the memo subagent, or describe a
+> storyboard-only fix.
+
+If the compose-deck subagent refuses because of `[NEEDS CONTENT]`
+placeholders or a draft storyboard, present:
+
+> compose-deck refused: <reason>. Want me to re-dispatch the storyboard
+> subagent? Reply **`yes, revise storyboard`** or describe the fix.
+
+Do not auto-route. Confirm.
+
+## Hard rules
+
+1. **One stage per invocation.** Never chain approve-and-advance in a
+   single command. The compose stage is the only one without an
+   approval gate, but it still consumes one invocation.
+2. Approval is explicit user input. Never infer.
+3. Never edit files inside `engine/` (the slide-authoring skill is
+   read-only reference for compose-deck and that's it).
+4. If detection returns an unknown state (files in unexpected
+   combinations), stop and ask the user to clarify. Don't guess.
+5. Use relative paths inside DA2.

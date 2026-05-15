@@ -1,0 +1,57 @@
+# Storyboard — DA2 build retrospective
+# Recipe: executive-pitch (cover / section / value / workflow / architecture / closing)
+# Theme: taikyoku
+# Memo: ./memo.md @ v1, approved
+
+memo: ./memo.md
+memo_version: 1
+status: approved
+
+recipe: executive-pitch
+theme: taikyoku
+mix: false
+
+content:
+
+  cover:
+    key_message: "The workflow was right; the substrate wasn't."
+    eyebrow: "DA2 · build retrospective"
+    notes: "Gradient canvas with breath. Big Prata headline (two lines max). Sub-line: 'Six phases, one engine swap.' Format callout box bottom-right with version pin."
+
+  section:
+    key_message: "Six phases. One engine swap."
+    section_num: "01"
+    notes: "Gradient canvas, no breath. Section number 01 on the left, vertical hairline, Prata heading on the right. The first of two gradient slides in the deck."
+
+  value:
+    key_message: "Three things that survived. Three things that changed."
+    bullets:
+      - "WORKFLOW · Five gated stages, filesystem-as-state-machine — identical to DA1."
+      - "MEMO · One memo per project; three artifacts (deck, minutes, one-pager) read it."
+      - "INSPECTOR · Click-to-comment + apply-comments replaces chat-driven /deck-edit."
+    notes: "Paper canvas. Three cards, each labeled (WORKFLOW / MEMO / INSPECTOR). Numbered eyebrows in accent purple, big Archivo titles, AccentRule under each, body explaining the change. Two columns of three claims — but render as one row of three cards."
+
+  workflow:
+    key_message: "Six phases, shipped one at a time."
+    bullets:
+      - "01 / SKELETON — directory + vendored engine + slidesDir wiring"
+      - "02 / MEMO+SB — subagents + first recipes + /da2-new + /da2-advance"
+      - "03 / COMPOSE — compose-deck subagent + da2-open.sh"
+      - "04 / FINALIZE — /da2-finalize + da2-finalize.sh + HTML+PDF exports"
+      - "05 / ARTIFACTS — memo-to-minutes + memo-to-one-pager skills"
+      - "06 / THEME — Taikyoku theme + executive-pitch recipe + reference deck"
+    notes: "Paper canvas. SVG line-draw across the top with 6 tickmarks (not 5 like the demo — this deck has 6 phases). 6 columns underneath, each with numbered stage eyebrow, AccentRule, Archivo title, body. Density-cap: keep each column's body to one short sentence. If 6 columns gets cramped, drop the body to 18px."
+
+  architecture:
+    key_message: "What landed where."
+    bullets:
+      - "01 · ENGINE — open-slide vendored, pinned, one config override"
+      - "02 · WORKFLOW — .claude/agents + .claude/commands + recipes"
+      - "03 · PROJECTS — Projects/<slug>/ flat, no metadata store"
+      - "04 · THEMES — themes/<id>.md + .demo.tsx, taikyoku is the first"
+    notes: "Paper canvas. 2×2 grid. Each quadrant: numbered eyebrow in accent, Prata heading, em-dash bullets listing concrete paths. The densest beat — earn it with specifics."
+
+  closing:
+    key_message: "Take the long view."
+    caption: "Same workflow, new substrate. The next deck you make is the proof."
+    notes: "Paper canvas, no eyebrow strip, no folio. Centered. Eyebrow 'the long view'. Prata 140px headline. THE ONE GOLD MOMENT: 280×8 accent-hot rule beneath the headline at tk-grow 800ms delay. Small caption below in ink-soft, max 900px. Bottom strip: 'da2 · retrospective / 06 of 06' in Archivo caps + JetBrains Mono."
