@@ -1,173 +1,202 @@
 ---
 doc: da2-handoff
-updated: 2026-05-19
-purpose: single orientation entry point for a fresh session (Cowork).
+updated: 2026-05-19 (post-flatten)
+purpose: single orientation entry point for a fresh session.
   Read this first, then the canonical docs it points to.
 ---
 
 # Deck Arsenal 2 — Handoff
 
-Hand-off after a long build run (Phases 7–11 + dark mode + a master
-reference catalogue + several inspector feedback rounds). Work continues
-in **Cowork** on three streams (bottom of this doc). Nothing in the
-Phase 7–11 work is committed yet — see "Git state".
+The brief's four-phase arc (Phase 7 refinement · Phase 8 Japanese ·
+Phase 9 library · Phase 10 integration) is complete. Phase 11 added
+composition-density (slide anatomy + multi-component layout grammar).
+Dark mode is productionised via CSS-variable token indirection. As of
+2026-05-19 a **Cowork flatten pass** consolidated docs, archived
+throwaway decks, and staged prompts for the next two improvements
+(Streams 2 & 3, below).
 
 ## 1. Where the project is
 
-The DA1-style pipeline (order → memo → storyboard → compose → finalize)
-on the vendored open-slide engine is intact. On top of it, the
-**Taikyoku** theme went from "synthesis baseline" to a production
-system:
+The DA1-style pipeline (order → memo → storyboard → compose →
+finalize) on the vendored open-slide engine works end-to-end. The
+**Taikyoku** theme is a production system:
 
-- **Phase 7** — refinement interview (Sessions A/B/C), all approved.
-- **Phase 8** — Japanese rendering: HomuraM bundled (3 woff2),
-  per-role CJK scale, bilingual primitives; WordmarkLockup/KanjiSeal
-  **parked/deferred** (brand mark ships as an image asset).
-- **Phase 9** — Tier 1 **component library** (19 components,
-  `themes/taikyoku/components/`), gallery, per-deck font subsetting
-  (`scripts/da2-subset-fonts.sh`).
-- **Phase 10** — integration capstone (seed-pack deck) + the
-  `compose-deck`↔library wiring (`COMPOSITION.md`).
-- **Dark mode** — productionised via CSS-variable token indirection
-  (`--tk-*`, per-slide `TK_LIGHT`/`TK_DARK` wrapper; **never `:root`**).
-- **Phase 11** — composition-density: a slide **anatomy + multi-
-  component layout grammar** (`COMPOSITION.md §1.5`), agents upgraded,
-  master reference rebuilt dense.
+- **19-component Tier 1 library** at `themes/taikyoku/components/`
+  (Phase 9). Each hook-free, self-contained, variant + density per
+  archetype.
+- **Slide anatomy + named layouts** at `themes/taikyoku/COMPOSITION.md`
+  §1.5 (Phase 11). Every content slide carries chrome + action title +
+  primary + ≥2 supporting + source + folio; fills ≈85–90% of the
+  canvas; lone centred components forbidden.
+- **Per-deck light/dark** via `var(--tk-*)` token indirection
+  (productionised 2026-05-19). Mode lives on a per-slide wrapper —
+  never `:root`. Components keep light hex as the fallback so
+  portability + standalone rendering survive.
+- **Per-deck JP font subsetting** via `scripts/da2-subset-fonts.sh`
+  (~97% reduction proven on the bilingual reference deck).
 
-Full chronological decision log with rationale + every superseding
-reversal: `themes/taikyoku/REFINEMENT.md` (1.9k lines — the source of
-truth for *why*; also the #1 compression target, see stream 1).
+The live deck (the substrate for the next refinement round) is
+**`Projects/2026-05-19_taikyoku-master-reference/`** — open with
+`./scripts/da2-open.sh 2026-05-19_taikyoku-master-reference`. Every
+other deck is archived at `Projects/_archive/<slug>/` and off the
+dev-server's discovery path.
 
-## 2. Canonical docs (authoritative vs reference)
+## 2. Canonical docs
 
-| Doc | Role | Status |
+| Doc | Role | Notes |
 | --- | --- | --- |
-| `CLAUDE.md` | operator manual / rules | **stale below Phase 6.3** — pointer added; treat REFINEMENT/COMPOSITION as live |
-| `themes/taikyoku.md` | the theme **contract** (palette, type, motion, tokens, components index, voice, dark) | authoritative; large (1145 ln) |
-| `themes/taikyoku/COMPOSITION.md` | the **composition spec** — §1.5 anatomy + grammar; beat→component map; locked doctrine; language; dark wrapper | authoritative |
-| `themes/taikyoku/REFINEMENT.md` | the **decision log** (every choice + rationale + supersessions) | authoritative history; bloated |
-| `.claude/agents/{memo,storyboard,compose-deck}.md` | pipeline subagents | upgraded for anatomy/density + dark; current |
-| `briefs/taikyoku-extensions.md` | the original Phase 7–10 brief | historical (delivered) |
-| `themes/taikyoku/components/*.tsx` | the 19 Tier-1 components | authoritative; each header comment is the slot/prop truth |
-| `Projects/2026-05-19_taikyoku-master-reference/` | the **visual reference catalogue** (v2, dense) | the current feedback substrate |
+| `CLAUDE.md` | operator manual, directory map, phase ladder, locked Taikyoku constraints, slash commands, subagents, skills | refreshed 2026-05-19 |
+| `README.md` | one-screen overview for someone who's never seen DA2 | refreshed 2026-05-19 |
+| `themes/taikyoku.md` | the theme **contract** — palette, type, motion, tokens, fixed components, gold rule, dark variant, voice, image-asset convention | Phase 11 reconciled (1145 lines) |
+| `themes/taikyoku/COMPOSITION.md` | the **composition spec** — §1.5 = anatomy + density floor + named layouts + support kit; beat → component map; locked doctrine; mono-language model; image-asset / font-subsetting at finalize | authoritative (266 lines) |
+| `themes/taikyoku/REFINEMENT.md` | the **decision log** — current state on top, superseded history in appendix | restructured 2026-05-19 (1953 → 758 lines, lossless for locked rules + supersession trails) |
+| `.claude/agents/{memo,storyboard,compose-deck}.md` | pipeline subagents — current, anatomy/density + dark-aware | |
+| `briefs/taikyoku-extensions.md` | the original Phase 7–10 brief | historical, delivered |
+| `briefs/engine-investigation.md` | Phase 1 slidesDir/themesDir analysis | historical, technically still correct |
+| `briefs/stream-1-font-dedupe.md` | font workflow audit + small CC prompt (no real duplication exists) | new 2026-05-19 |
+| `briefs/stream-2-layout-promotion.md` | **CC prompt** — promote layout primitives into the theme | new 2026-05-19 (Stream 2 staged) |
+| `briefs/stream-3-feedback-loop.md` | design doc — inspector-comment triage, render smoke-check, marker convention | new 2026-05-19 (Stream 3 design) |
+| `themes/taikyoku/components/*.tsx` | 19 Tier-1 components | header comment per file is the slot/prop truth |
+| `Projects/2026-05-19_taikyoku-master-reference/` | the **visual reference catalogue** (v2 — dense composition) | only live deck |
 
-Hard locked constraints (do not silently reverse — see REFINEMENT for
-the full set): single purple accent + one rationed gold; **no breath /
-no ambient motion**; motion vocab `tk-fadeUp/fadeIn/grow/growY/rise/
-tk-draw`; Helvetica-Neue caps (not Archivo); Prata display incl. card
-titles; mono-language production decks; Title Case headlines;
-`var(--tk-*)` tokens; **component library is HOOK-FREE** (React hooks
-blanked a deck — count-up is ref-callback + rAF only); count-up is
-sanctioned **only** on large metric figures.
+## 3. Locked Taikyoku constraints
 
-## 3. Open threads / risks
+The condensed set (full detail: `CLAUDE.md` § "Locked Taikyoku
+constraints" + `REFINEMENT.md` §1):
 
-- **Git: nothing committed.** All Phase 7–11 work is untracked +
-  `CLAUDE.md`/`taikyoku.md`/agents/`da2-finalize.sh` modified. A
-  deliberate commit (or commits) is an early Cowork step — decide
-  granularity (one "Phase 7–11" commit vs per-phase).
-- **Deferred future phases (not started, intentional):**
-  `component-from-screenshot` skill; reserved component slot #15 / new
-  archetypes; (dark-mode is done).
-- **The anatomy/grammar is deck-local.** `Frame · Rail · Band · TwoUp ·
-  Structural · Cards · Stat/Insight/LList/Annote` (the support kit) live
-  *inside* `Projects/2026-05-19_taikyoku-master-reference/index.tsx`, not
-  in the theme. They are the de-facto reference implementation of
-  COMPOSITION §1.5 and should be promoted to real theme primitives —
-  this is the crux of stream 2.
-- **Feedback loop friction:** inspector comments arrive faster than an
-  apply-comments sweep; decision-class vs mechanical comments are not
-  separated; markers hoist to shared helpers (ambiguous targeting).
-  Stream 3.
-- **dev server:** `cd engine && pnpm dev` (background) serving at
-  `:5173`; decks open via `scripts/da2-open.sh <slug>`.
+- Single purple accent; **gold rationed to one moment per deck**
+  (deck-level assignment, never auto-claimed).
+- Three reds, disjoint roles: `accent-negative` (data-negative +
+  blocked step), `brand-red` (reserved, unused — KanjiSeal deferred),
+  decorative stays purple.
+- Motion vocabulary: `tk-fadeUp · tk-fadeIn · tk-grow · tk-growY ·
+  tk-rise · tk-draw`. **No breath / no ambient motion.** Uniform
+  cross-fade page transition. Total settle ≤1.6 s per page.
+- **Count-up sanctioned on large metric figures only** (headline-
+  metric + quarterly-metrics hero-lead). **HOOK-FREE — mandatory**
+  (ref-callback + rAF; no React hooks anywhere in the library).
+- Caps face = Helvetica Neue (Inter fallback) — **not Archivo**. Prata
+  display + card titles + plotted-item labels. Prata-italic =
+  person/attribution roles + card role-kicker only. JP: HomuraM
+  display + Noto Sans JP body.
+- Headlines & page headings = Title Case; eyebrow/folio = tracked
+  CAPS; body = sentence case.
+- Production decks are **mono-language**. References / galleries: EN
+  then JP on **separate** consecutive slides.
+- Dark = per-deck, mono-mode, scoped to a per-slide wrapper. Components
+  use `var(--tk-NAME, <light-hex>)` so standalone rendering works.
+- compose-deck **transcribes** components into the deck's one-file
+  `index.tsx` (specialised to variant/density). Library bug-fixes do
+  NOT auto-propagate. Layouts (if promoted via Stream 2) would
+  **import** — different lifecycle.
 
-## 4. Cowork work streams
+## 4. Stream status (Cowork work streams)
 
-### Stream 1 — Flatten / compress / clean up
+### Stream 1 — Flatten / compress / clean up — **DONE 2026-05-19**
 
-**Goal:** streamline the codebase + docs without losing the decision
-trail.
+What landed:
+- **9 throwaway decks archived** to `Projects/_archive/<slug>/`. Off
+  the dev server. README in archive explains what's where, why, and
+  how to resurrect. Only `master-reference` is the live deck.
+- **`REFINEMENT.md` restructured**: 1953 → 758 lines (61% reduction).
+  Top = locked-constraints index + current state by topic. Appendix =
+  every superseded entry preserved verbatim. Decision provenance
+  available via `git log -p` on the pre-flatten commit `67a2b80`.
+- **`CLAUDE.md` rewritten**: stale Phase 1–6.3 status section replaced
+  with a Phase 1–11 ladder, locked-constraints summary, current
+  directory map (incl. archive + layouts placeholder), and pointer
+  to HANDOFF as the fresh-session entry.
+- **`README.md` refreshed**: phase-1-of-5 framing gone; current
+  status, canonical docs, master-reference quick-open.
+- **`ENGINE_INVESTIGATION.md` relocated** to
+  `briefs/engine-investigation.md` (alongside `taikyoku-extensions.md`
+  — both historical-but-useful design docs). Config comment updated.
+- **Sub-READMEs refreshed**: `themes/`, `themes/taikyoku/`,
+  `Projects/`, `Inbox/` — all stripped of Phase-1-era "shipping soon"
+  framing.
+- **`executive-pitch.yaml` recipe updated**: removed stale "subtle
+  breath" + "Archivo title" references; aligned to the locked Phase 11
+  doctrine.
+- **Archive-path references swept**: `taikyoku.md` references to
+  `da2-retrospective` / `taikyoku-dark-spike` / `taikyoku-gallery`
+  point at `Projects/_archive/...`. Script + command examples
+  switched to `2026-05-19_taikyoku-master-reference`.
+- **Doc reconciliation pass**: `taikyoku.md` ↔ `COMPOSITION.md` ↔
+  `REFINEMENT.md` ↔ agents — verified no contradictions on locked
+  rules.
 
-Concrete targets (from the 2026-05-19 inventory):
-- **Projects/ has 10 decks; ~8 are throwaway reference/spike/
-  validation artifacts** (`smoke`, `da2-tour`, `da2-retrospective`,
-  `sleep-hygiene`, `taikyoku-bilingual-ref` (396K — carries subset
-  fonts), `taikyoku-dark-spike`, `taikyoku-gallery`,
-  `taikyoku-darkmode-check`, `taikyoku-seed-pack`). Only
-  `master-reference` is the live substrate. Decide: keep a curated few
-  as canonical references, archive/delete the rest (their findings are
-  in REFINEMENT).
-- **`REFINEMENT.md` is 1.9k lines** — chronological, repetitive,
-  full of superseded entries. Compress to: a "current state of
-  decisions" section (what holds now) + a thin superseded-history
-  appendix. Don't lose the supersession trail (it's load-bearing for
-  "don't re-litigate locked calls").
-- **`CLAUDE.md` phase status is stale** (Phases 1–6.3 only). Update
-  to reflect 7–11 + point to the live docs.
-- **14 MB bundled fonts** + duplicated inline component code across
-  reference decks (one-file rule). Consider: dedupe strategy, the
-  transcribe-not-import reality (COMPOSITION §1), font subsetting as
-  the default at finalize.
-- **Doc relevance pass:** reconcile any contradictions; ensure
-  taikyoku.md ↔ COMPOSITION.md ↔ agents ↔ REFINEMENT agree (they did at
-  handoff; verify after compression).
+What did NOT land here:
+- **Granular commits** — the Cowork sandbox couldn't run `git commit`
+  (filesystem-mount layer wouldn't let it acquire `.git/index.lock`).
+  All file changes are staged on disk; commits are queued in
+  `scripts/da2-cleanup-commits.sh` for the user to run locally. **One
+  user-facing step before continuing**: run that script (8 granular
+  commits) so the flatten enters git history.
+- **`.test-stale-lock`** (empty file at repo root from a sandbox test)
+  needs deletion (the same lock issue blocks it). `git clean -fdx` or
+  `rm -f .test-stale-lock` outside the sandbox.
 
-### Stream 2 — Frameworks/subagents for deck composition using anatomy
+### Stream 2 — Promote layout primitives into the theme — **prompt staged**
 
-**Goal:** make the Phase 11 anatomy + grammar a first-class,
-reusable framework, not deck-local scaffolding.
+The 10 layout primitives (`Frame · Rail · Band · TwoUp · Structural ·
+Cards · Stat · Insight · LList · Annote`) plus 2 new ones
+(`AnchoredRail · DenseGrid` — the missing named layouts from
+COMPOSITION.md §1.5) get promoted into `themes/taikyoku/layouts/`.
+After this lands, compose-deck assembles from named layouts +
+components; the anatomy stops being deck-local scaffolding.
 
-Starting points:
-- The spec exists: `COMPOSITION.md §1.5` (anatomy: eyebrow · action
-  title · primary + ≥2 supporting · source · folio; density floor;
-  named layouts `primary-rail`/`primary-band`/`two-up`/`anchored-rail`/
-  `dense-grid`; support kit).
-- The reference implementation exists, deck-local, in
-  `Projects/2026-05-19_taikyoku-master-reference/index.tsx`
-  (`Frame/Rail/Band/TwoUp/Structural/Cards/Stat/Insight/LList/Annote` —
-  note the recently-fixed rules: zone slots are `display:block` so a
-  block component fills the zone; `Structural` for components that own
-  their own eyebrow/heading to avoid double chrome; `Frame jp` for
-  Japanese slides).
-- The agents (`storyboard.md`, `compose-deck.md`) already require
-  planning/assembling to the anatomy + density floor.
+**Prompt:** `briefs/stream-2-layout-promotion.md`. Six phases (A read
+→ B scaffold → C migrate master-reference → D update docs → E verify
+→ F commit), rollback strategy included. Run in Claude Code at the
+repo root.
 
-Likely shape of the work (Cowork to design): promote the layout
-primitives + support kit into the theme (e.g.
-`themes/taikyoku/layouts/` or documented in taikyoku.md as fixed
-components), so `compose-deck` *assembles from a named layout +
-components* instead of re-deriving Frame/Rail per deck; possibly a
-dedicated **anatomy/compose subagent** that takes a storyboard beat and
-emits an anatomy-conformant Page. Reconcile with the one-file/
-transcribe-not-import rule (COMPOSITION §1) — decide whether layouts are
-transcribed like components or imported.
+**Key locked decision in the prompt:** layouts are **imported** from
+the theme (stable infrastructure, consistent across decks);
+components remain **transcribed** (per-deck specialisation, frozen-
+with-deck). REFINEMENT.md will gain a Phase-12 appendix entry when
+this lands.
 
-### Stream 3 — Better iteration & feedback loop
+### Stream 3 — Tighter inspector → apply → verify loop — **design ready**
 
-**Goal:** a tighter inspector → apply → verify loop.
+Four proposed conventions / one tiny tool, addressing the Phase-11
+feedback frictions:
 
-Observed problems this run: comments stream faster than a sweep;
-mechanical vs decision-class comments aren't triaged (decisions —
-e.g. "update brief, allow count-up" — got mixed with "add a card");
-markers hoist to shared helpers so targeting is ambiguous; no batching
-/ no "this is a brief change, confirm separately" channel; verifying
-"renders" (not just "compiles") needed a manual dev-log + runtime
-reasoning step (a transform-200 hid a hooks runtime crash).
+- **P1** comment-prefix triage (`fix:` / `decide:` / `brief:` /
+  `ask:`) — biggest single win, eliminates doctrine-comments slipping
+  through the slide-edit sweep.
+- **P2** instance-local marker anchors (`data-anchor="slide-05/cards"`)
+  — kills the hoist-to-helper ambiguity.
+- **P3** render smoke-check in verify (a. dev-server log poll, b.
+  headless render, c. visual diff) — catches the count-up class of
+  runtime regressions.
+- **P4** batched feedback rounds (`begin sweep` keyword) — collapses
+  the comments-stream-faster-than-sweep race.
 
-Directions to explore (Cowork to design): a triage step that splits
-inspector comments into *mechanical* (auto-apply) vs *decision/brief-
-change* (queue for explicit confirm + REFINEMENT log); a render smoke-
-check (not just transform) in the verify step; a convention so markers
-land on identifiable slide instances not hoisted helpers; a batched
-"feedback round" cadence instead of per-marker chase.
+Design only — `briefs/stream-3-feedback-loop.md`. P1 + P3.a are the
+recommended "ship first" pair if exactly one round of work goes into
+this; P2 + P4 are quality-of-life.
 
 ## 5. Quick start for a fresh session
 
-1. Read this file, then `themes/taikyoku/COMPOSITION.md` (§1.5) and
-   skim `themes/taikyoku.md` (contract) + the tail of
-   `themes/taikyoku/REFINEMENT.md` (latest decisions).
-2. `cd engine && pnpm dev` (background) → `scripts/da2-open.sh
-   2026-05-19_taikyoku-master-reference` to see the current substrate.
-3. Pick a stream above. Honor the locked constraints (§2). Log any
-   reversal in REFINEMENT as superseding (don't delete history).
+1. Read this file end-to-end (you're here).
+2. **First action:** run `./scripts/da2-cleanup-commits.sh` to commit
+   the staged flatten work (8 commits in granular order). Then
+   `rm .test-stale-lock` for tidiness.
+3. Pick a stream. If continuing the build arc: Stream 2 is the next
+   highest-value piece (promotes the anatomy to first-class theme
+   infrastructure, makes future agent/compose work easier).
+4. Read `themes/taikyoku/COMPOSITION.md` §1.5 + skim `taikyoku.md` +
+   the tail of `REFINEMENT.md` if context matters.
+5. `cd engine && pnpm dev` (background) → open the master-reference
+   to see the live substrate.
+6. Honor the locked constraints (§3 above + `CLAUDE.md`'s expanded
+   version). Log any reversal in `REFINEMENT.md` as a superseded
+   entry in the appendix — don't delete history.
+
+## 6. Open future work (none of this is in flight)
+
+- `component-from-screenshot` skill (deferred since Phase 9).
+- Reserved component slot #15 / new archetypes (no gap surfaced
+  during Phase 9; opportunistic).
+- The two unspecified gradient variants (`earth`, `warm-energy`) —
+  taikyoku.md still says PENDING.
