@@ -1,0 +1,164 @@
+# Storyboard — Taikyoku Seed Information Pack
+# Memo: ./memo.md @ v1, approved (gate collapsed — Phase 10 validation)
+# Theme: taikyoku · Language: english (mono) · Recipe: executive-pitch (loose base)
+# Beats are storyboard-authoritative (more than the 6-beat recipe). Each
+# beat names the library component + variant/density per
+# themes/taikyoku/COMPOSITION.md. One assigned gold moment = the closing.
+
+memo: ./memo.md
+memo_version: 1
+status: approved
+recipe: executive-pitch
+theme: taikyoku
+language: english
+mix: false
+gold_moment: ask-close          # deck-level assignment (not auto-closing)
+
+content:
+
+  cover:
+    component: opening-hero
+    key_message: "Assurance For The People Who Own The Risk"
+    eyebrow: "Taikyoku · Seed Information Pack"
+    meta: "Confidential · 2026"
+    notes: >
+      Full gradient canvas, no breath. Sub-line: "AI agents that watch
+      capital projects and assets for the owner — independently,
+      continuously." Text + structural graphics only (no visual slot).
+
+  divider_problem:
+    component: section-divider
+    key_message: "The Owner Is Blind Between Reports"
+    section_num: "01"
+    notes: "Gradient. Kicker 'The Problem'. No seal, no breath."
+
+  problem_metric:
+    component: headline-metric
+    key_message: "~9 In 10 Megaprojects Run Over Budget"
+    notes: >
+      The one number. value "~80%", label "average cost overrun on
+      megaprojects", context doubles as proof: "Industry studies across
+      thousands of projects; schedule slips run quarters, not weeks.
+      Owners learn this from reports authored by the contractor."
+
+  problem_grid:
+    component: value-grid
+    density: standard
+    surface: bare
+    key_message: "Independent Assurance Today Fails Three Ways"
+    notes: >
+      Three cards. roleKicker / title / body:
+      Sampled — "Audited in slices, months apart, never the whole."
+      Late — "Findings arrive after the capital is committed."
+      Conflicted — "Authored by the party being assured."
+
+  divider_solution:
+    component: section-divider
+    key_message: "Continuous Assurance, On The Owner's Side"
+    section_num: "02"
+    notes: "Gradient. Kicker 'The Solution'."
+
+  solution:
+    component: methodology
+    variant: pillars
+    density: standard
+    key_message: "Four Lanes Of Owner-Level Assurance"
+    center_label: "Owner-level assurance"
+    notes: >
+      Pillars under the capstone. 4 elements:
+      Cost & Schedule Integrity · Change-Order & Claims Scrutiny ·
+      Quality & Commissioning Conformance · Asset Performance vs Design.
+
+  how:
+    component: process-flow
+    density: standard
+    key_message: "How The Agents Run"
+    notes: >
+      5 steps: 01 Connect · 02 Baseline (independent) · 03 Reconcile
+      (reported vs inferred) · 04 Surface (evidence to owner) · 05 Learn
+      (feeds the assurance graph). No blocked status here.
+
+  positioning:
+    component: quadrant
+    density: rich
+    highlight: taikyoku
+    key_message: "Independent And Continuous — Only One Quadrant"
+    notes: >
+      Axes x "Periodic → Continuous", y "Conflicted → Independent".
+      TL Owner's-engineer audits (independent, periodic) ·
+      TR Taikyoku (independent, continuous) — HIGHLIGHT ·
+      BL EPC self-reporting (conflicted, periodic) ·
+      BR Project-controls software (conflicted, continuous-ish; data not assurance).
+
+  divider_proof:
+    component: section-divider
+    key_message: "What The Pilots Show"
+    section_num: "03"
+    notes: "Gradient. Kicker 'Proof'."
+
+  traction:
+    component: quarterly-metrics
+    variant: hero-supporting
+    density: rich
+    key_message: "Pilots Are Paying Back"
+    notes: >
+      Lead metric $6.2B "capital project value under assurance".
+      Supporting: $184M "cost/schedule exposure surfaced, first 90 days";
+      11x "pilot ROI on fees"; 4 "design-partner owners (2 converting to paid)".
+      All semi-fictional — never present as audited.
+
+  voice:
+    component: customer-voice
+    density: standard
+    key_message: "It Caught What Our Monthly Report Did Not"
+    notes: >
+      Invented owner quote. quote: "Taikyoku flagged a schedule slip and
+      a soft change-order six weeks before it would have reached my
+      board — from the same data my contractor was reporting against."
+      name "VP, Major Capital Projects", role (Prata italic) "Energy
+      infrastructure owner", company omitted (anonymised pilot).
+
+  market:
+    component: headline-metric
+    key_message: "A $12B Serviceable Market, Compounding"
+    notes: >
+      value "$12B", label "serviceable: project-controls + owner's
+      assurance software & services", context: "Against a multi-trillion
+      annual capital-project base; agentic AI shifts assurance spend
+      from services to software."
+
+  divider_ask:
+    component: section-divider
+    key_message: "What The Round Builds"
+    section_num: "04"
+    notes: "Gradient. Kicker 'The Ask'."
+
+  roadmap:
+    component: roadmap
+    variant: now-next-later
+    density: standard
+    key_message: "Pilots To Platform In 18 Months"
+    notes: >
+      NOW: convert 2 paid pilots · harden the 4 assurance lanes.
+      NEXT: scale to ~8 owners · build the assurance graph.
+      LATER: post-handover asset-performance agents · category expansion.
+
+  team:
+    component: bio-card
+    variant: lead-supporting
+    key_message: "Owner's-Engineer Domain Meets Applied AI"
+    notes: >
+      Lead: Founder & CEO — "Ex owner's-engineer / capital-projects
+      controls; second-time founder" (role Prata italic). Bench (3):
+      Head of Agent Eng · Head of Domain (Owner's Engineer) · Head of
+      GTM. Invented, semi-fictional — no real identities.
+
+  ask_close:
+    component: closing
+    gold_moment: true            # THE one gold moment (deck-assigned)
+    key_message: "Raising $7M To Put The Owner Back In Control"
+    notes: >
+      Centered closing, paper, no breath. sub: "18-month runway —
+      pilots to platform, and the assurance graph that compounds."
+      goldMoment=true: gold rule (the deck's single gold use). mark =
+      TKYK brand image asset if available, else a tracked-caps wordmark.

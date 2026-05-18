@@ -43,6 +43,17 @@ if [[ ! -f "$PROJ_DIR/index.tsx" ]]; then
   exit 1
 fi
 
+# ─── Advisory: per-deck font subsetting (Phase 9) ─────────────────────────────
+# If the deck imports the shared 14MB theme HomuraM (not a local subset),
+# remind the user to subset before exporting. Non-fatal — finalize only
+# moves files; subsetting must happen before the browser export.
+if grep -qE "themes/taikyoku/assets/fonts/HomuraM" "$PROJ_DIR/index.tsx" 2>/dev/null \
+   && [[ ! -f "$PROJ_DIR/assets/fonts/HomuraM-Medium.woff2" ]]; then
+  echo "⚠ This deck imports the shared 14MB theme HomuraM fonts." >&2
+  echo "  Run ./scripts/da2-subset-fonts.sh $SLUG and repoint imports to" >&2
+  echo "  './assets/fonts/HomuraM-*.woff2' BEFORE the browser export (~97% smaller)." >&2
+fi
+
 if [[ ! -d "$DOWNLOADS" ]]; then
   echo "✗ ~/Downloads not found. Expected $DOWNLOADS to exist." >&2
   exit 1

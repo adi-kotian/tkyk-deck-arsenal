@@ -165,6 +165,15 @@ in. The `open-slide.config.ts` override is preserved across the swap.
 
 ## Phase status
 
+> **⚠️ This section below covers Phases 1–6.3 only and is STALE.**
+> Phases 7–11 + dark mode happened (Taikyoku refinement interview,
+> Japanese rendering, the 19-component Tier 1 library, integration,
+> dark-mode token indirection, composition-density anatomy/grammar).
+> **Start at `HANDOFF.md` (repo root).** Live authoritative docs:
+> `themes/taikyoku/REFINEMENT.md` (decisions), `themes/taikyoku.md`
+> (contract), `themes/taikyoku/COMPOSITION.md` (composition spec).
+> Treat the 1–6.3 list below as historical.
+
 - [x] **Phase 1 — skeleton.** Directory structure, vendored engine, blank
   templates, slidesDir investigation.
 - [x] **Phase 2 — memo + storyboard.** `memo` and `storyboard` subagents

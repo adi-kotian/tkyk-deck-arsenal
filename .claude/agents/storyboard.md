@@ -22,6 +22,11 @@ directly by the user for revisions.
 4. **(If revising) the existing storyboard** plus the user's feedback.
 5. **The DA2 schema** at `Templates/STORYBOARD.yaml`. Use it as the
    structural truth.
+6. **The composition spec** at `themes/taikyoku/COMPOSITION.md` when the
+   theme is `taikyoku` — **read §1.5 (slide anatomy + density floor +
+   named layouts)**. You plan each beat *to that anatomy*. A beat that
+   yields one claim and one component is **under-planned** — that is the
+   empty-slide failure mode this agent must prevent.
 
 ## Output
 
@@ -40,17 +45,31 @@ Exactly one file: `Projects/<slug>/storyboard.yaml`. Top-level fields:
 
 ## Filling the content block
 
-For each beat in the chosen recipe, in beat order:
+For each beat in the chosen recipe, in beat order, plan the **full
+production-slide anatomy** (COMPOSITION.md §1.5) — not a lone claim:
 
-1. Derive `key_message` from the memo's thesis and key points. One
-   sentence. Load-bearing claim — the line that has to land on that beat.
-2. Optionally add `bullets` (3–5 short sub-claims) if the recipe says
-   density is medium or high and the content lends itself.
-3. Optionally add `sources` (paths from the memo's source list) for beats
-   that should cite specific evidence.
-4. Optionally add `notes` — freeform direction for the composer (tone,
-   layout hint, "show a chart not bullets", "this is the line that has to
-   land").
+1. `key_message` — the load-bearing claim (one sentence) as before.
+2. `action_title` — the **so-what** headline the slide will show: a
+   conclusion, not a topic ("Pipeline shifted to self-serve", not
+   "Pipeline"). Plus an optional one-line `subhead`.
+3. `primary` — the hero component for the beat (`component:` +
+   `variant:`/`density:` per the beat→component map) and the concrete
+   content it carries (the figures/points/quote — real, from the memo).
+4. `supporting` — a list of **≥2** secondary elements that fill the
+   slide, each with concrete content: a secondary component, a
+   `stat-callout`, an `insight` (one sharp sentence), a `labelled-list`,
+   an `annotation`. These come from the memo's other key points /
+   sources — they are not decoration; they are the rest of the argument.
+5. `source` — the citation/method line (from the memo's sources;
+   "Source: …", "n = …", a methodology note). Required on content beats.
+6. `layout` — the named layout from COMPOSITION.md §1.5 (`primary-rail`
+   / `primary-band` / `two-up` / `anchored-rail` / `dense-grid`) that
+   best fits primary + supporting.
+7. `notes` — any remaining freeform direction for the composer.
+
+A content beat with no `supporting` and no `source` is **not done** —
+either mine more from the memo or flag the beat as under-supported
+(§"Mismatch handling"). Do not ship a one-element beat.
 
 ### Beat-content mapping heuristics
 
@@ -104,6 +123,12 @@ and your top pick.
    memo revision is detectable.
 5. Don't write any other files. No slide source, no memo edits.
 6. Don't read or write anything inside `engine/`.
+7. **Density floor (taikyoku):** every content beat must plan
+   `action_title` + `primary` + `supporting` (≥2) + `source` + `layout`.
+   A beat planned as one claim + one component is the empty-slide bug —
+   reject it: mine the memo harder or flag the beat under-supported.
+   Section/cover/closing beats are exempt from the ≥2-supporting rule
+   but still get an `action_title`/sub and meta.
 
 ## Return contract
 

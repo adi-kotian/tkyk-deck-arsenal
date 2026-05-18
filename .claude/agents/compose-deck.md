@@ -29,9 +29,21 @@ regeneration after a storyboard change.
    exist, use the default fallback palette (see below).
 5. **The slide-authoring contract** at
    `engine/apps/demo/.claude/skills/slide-authoring/SKILL.md`. **Read
-   this before writing any React.** It is the technical truth for canvas
-   size, type scale, vertical-budget math, layout primitives, and the
-   `index.tsx` file format. Do not skip it.
+   this before writing any React.** It is the generic open-slide
+   technical truth for canvas size, type scale, vertical-budget math,
+   and the `index.tsx` file format. Do not skip it. (It is read-only
+   engine reference — never edit it.)
+6. **The Taikyoku composition spec** at
+   `themes/taikyoku/COMPOSITION.md` — **read this whenever the theme is
+   `taikyoku`** (the common case). It owns *how to assemble a deck from
+   the component library*: the 19-component catalog, beat→component
+   mapping, the full-slide-vs-canvas-block rule, and the current locked
+   doctrine (gold, motion, fonts, language, assets). It **supersedes
+   the "Phase 7–9 Taikyoku composition" section below wherever more
+   specific**, and supersedes any older Taikyoku guidance you may have
+   seen. Pair it with `themes/taikyoku/components/<name>.tsx` (each
+   component's header comment is the authoritative slot/prop list) and
+   `themes/taikyoku.md` (the theme contract).
 
 ## Output
 
@@ -171,79 +183,83 @@ slides in open-slide.
 
 
 
-## Phase 6 — Taikyoku-aware composition
+## Phase 7–9 — Taikyoku composition (assemble from the library)
 
-The `taikyoku` theme ships with five fixed components inside its
-`themes/taikyoku.md`: `GradientCanvas`, `PaperCanvas`, `Eyebrow`,
-`AccentRule`, `Folio`. When the storyboard's theme is `taikyoku`,
-**reuse these components inline** rather than building chrome from
-scratch.
+When the storyboard's theme is `taikyoku`, **`themes/taikyoku/
+COMPOSITION.md` is the source of truth** for how to build the deck.
+Read it. It owns the 19-component catalog, the beat→component mapping,
+the full-slide-vs-canvas-block rule, variant/density selection, and the
+current locked doctrine. Don't compose Taikyoku from memory — the
+library exists; assemble from it, don't hand-build slides that
+duplicate components.
 
-The theme's markdown contains the exact React source — copy the
-component definitions verbatim into a `// ─── chrome ───` block near
-the top of `index.tsx`, then call them from each Page. Don't paraphrase
-their internals; their motion timing and dimensions are load-bearing.
+**Mechanics:** the five fixed chrome primitives (`GradientCanvas`,
+`PaperCanvas`, `Eyebrow`, `AccentRule`, `Folio`) live in
+`themes/taikyoku.md`; the 19 archetype components live in
+`themes/taikyoku/components/<name>.tsx`. Per the one-file rule, copy
+the source of the components/primitives a Page uses into `index.tsx`
+inline (verbatim — their dimensions and motion are load-bearing), then
+compose Pages from them: full-slide archetypes (`opening-hero`,
+`section-divider`, `closing`, `image-led`) ARE a Page; canvas-agnostic
+blocks get wrapped in a `PaperCanvas`. Each component's header comment
+is the authoritative slot/prop list.
 
-### Canvas selection per purpose (Taikyoku theme)
+**Density is mandatory — assemble to the slide anatomy (COMPOSITION.md
+§1.5).** A lone austere component centred on a canvas is the
+empty-slide bug and is **forbidden**. Every content slide = chrome
+(eyebrow strip) + an **action title** (the so-what, + optional subhead)
++ a **primary** element + a **supporting cluster of ≥2** elements
+(secondary component / stat-callout / insight / labelled-list /
+annotation, from the storyboard's `supporting`) + a **source/method
+line** + **folio**, arranged with the storyboard's named `layout`
+(`primary-rail` / `primary-band` / `two-up` / `anchored-rail` /
+`dense-grid`), filling ≈85–90 % of the canvas. The support kit is slide
+furniture you compose inline with `var(--tk-*)` tokens — not new
+components, and components keep their approved densities (fullness comes
+from composition, never from inflating a component). If the storyboard
+beat lacks `action_title`/`supporting`/`source`, the storyboard is
+under-planned — surface it; do not emit the sparse slide.
 
-| Purpose | Canvas | Why |
-| --- | --- | --- |
-| `cover` | `GradientCanvas breath` | First impression. Gradient handshake + 8s breath. |
-| `section` | `GradientCanvas` (no breath) | Sectioning is the second moment the gradient surfaces. |
-| `value`, `workflow`, `architecture` | `PaperCanvas` | Content slides drop to white; structure carries the look. |
-| `closing` | `PaperCanvas` | Closer is paper too — but it gets the one gold rule. |
+### ⚠️ Corrections — these REVERSE older guidance you may carry
 
-### Two purposes the recipe needs that older recipes don't define
+Pre-Phase-7 Taikyoku instructions are stale. COMPOSITION.md is
+authoritative; the load-bearing reversals:
 
-These are new with `executive-pitch`:
+- **No `tk-breath`. No ambient motion.** It was removed entirely. The
+  cover does **not** breathe. Motion vocabulary is exactly
+  `tk-fadeUp · tk-fadeIn · tk-grow · tk-growY · tk-rise · tk-draw`
+  (`tk-growY`, vertical structural lines, is new). Nothing loops.
+- **Gold is a deck-level assignment, NOT the closing's default.**
+  `accent-hot #FFE1A4` once per deck — *consciously choose* the one
+  Page (set `closing`'s `goldMoment` true on exactly one slide, or
+  assign gold elsewhere deliberately). May ship with none; never two.
+- **Caps face is Helvetica Neue (Inter fallback), NOT Archivo.** Prata
+  = display + card titles. Prata-italic = person/card-role kickers.
+  Headlines Title Case; eyebrow/folio tracked CAPS; body sentence case.
+- **`WordmarkLockup` / `KanjiSeal` are parked/deferred — do NOT
+  refuse** decks that want a wordmark/seal. Use the brand logo as a
+  per-deck **image asset** (`import logo from './assets/...'`, Vite
+  form — relative `url()` in `<style>` is not served) and flag it.
+- **Mono-language production decks** (all-EN or all-JP + limited
+  relevant cross-language). No same-slide bilingual mirror. JP decks:
+  HomuraM display + Noto Sans JP body, and the return summary must
+  remind the user to run `scripts/da2-subset-fonts.sh <slug>` before
+  finalize.
+- **Light/dark is per-deck (mono-mode).** Components use
+  `var(--tk-*, <light>)`. **Scope mode vars to a per-slide wrapper,
+  never `:root`** (`:root` leaks globally → light pages render dark;
+  confirmed bug). Declare `TK_LIGHT`/`TK_DARK` (taikyoku.md → "Theming
+  tokens") and wrap every Page's content in
+  `<div style={{ ...(TK_DARK|TK_LIGHT), width:'100%', height:'100%' }}>`.
+  Light deck wraps in `TK_LIGHT`, dark in `TK_DARK`. Keep components'
+  `var(--tk-*, …)` verbatim when transcribing. Never mix modes in one
+  deck.
+- Still forbidden idioms (typewriter, blink, marching ants, progress
+  bar): refuse cleanly, render the restrained equivalent, flag it.
+  **Don't silently render against the brief.**
 
-**`section`** — a numbered chapter divider. Layout: centered horizontal
-arrangement of three elements with `gap: 64px`. Left: section number in
-Prata 144px ink-soft + an AccentRule below it. Middle: a 1px vertical
-hairline 280px tall, ink-muted color. Right: Prata heading 96px, max
-720px wide, with the heading text from the beat's `key_message`. No
-top eyebrow strip, no folio. Whole thing fades up at 700ms with a
-200ms internal stagger. Always uses `GradientCanvas` (no breath).
-
-**`closing`** — a centered closer. Layout: vertical stack centered in
-the canvas. Top: a small Archivo eyebrow ("the long view" or whatever
-the storyboard's notes suggest), 20px tracked. Middle: Prata 140px
-centered headline with two lines max. **Then the one moment of gold**
-— a 280px × 8px `accent-hot` rule with `tk-grow` at 800ms delay.
-Bottom: a small caption in ink-soft, 28px, max 900px width, centered.
-At the very bottom (56px from edge): minimalist Archivo-caps "section
-name + page X / total" line in ink-muted. No top eyebrow strip — the
-closing slide breaks the eyebrow convention deliberately.
-
-### Motion restriction under Taikyoku
-
-Only the six `tk-*` keyframes from the theme: `tk-fadeUp`, `tk-fadeIn`,
-`tk-grow`, `tk-rise`, `tk-draw`, `tk-breath`. Drop the keyframe
-definitions into a `<style>` block at the top of each Page's JSX (the
-theme's example shows the pattern). **Do not use** any other keyframe
-— no typewriter, no blinking caret, no traveling dot, no progress-bar
-fill, no bounce or spring easing. If a beat's notes ask for motion the
-theme doesn't allow, surface that in your return summary and use the
-closest restrained equivalent.
-
-### The one gold moment
-
-`accent-hot` (`#FFE1A4`) is used **at most once across the entire
-deck**. The closing slide is the default landing spot — a 280×8 rule
-beneath the closing headline. If you decide gold belongs somewhere
-else (the cover's format callout border, a single eyebrow square dot
-on one specific page), document the choice in your return summary and
-ensure no other page uses gold.
-
-### Theme-aware refusals
-
-If the storyboard sets `theme: taikyoku` and a beat's notes ask for a
-forbidden idiom (typewriter, blink, marching ants, progress bar,
-funnel with colored stage icons, kanji seal, status pill, wordmark
-lockup with kanji square), refuse cleanly. Output the page using the
-restrained equivalent and add the unfulfilled note to your return
-summary so the user can either revise the storyboard or accept the
-substitution. **Don't silently render against the brief.**
+Full detail (catalog, mapping table, doctrine, language, assets):
+`themes/taikyoku/COMPOSITION.md`.
 
 ## Return contract
 
