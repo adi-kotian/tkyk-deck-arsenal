@@ -7,6 +7,8 @@ Operational shell scripts for DA2.
 | `sync-engine.sh` | 1 | Upgrade vendored open-slide to a new pinned tag. |
 | `da2-open.sh` | 3 | Check dev server on port 5173; open `/s/<slug>` in browser. |
 | `da2-finalize.sh` | 4 | Move browser-downloaded HTML+PDF from `~/Downloads` to `Projects/<slug>/exports/`. |
+| `da2-subset-fonts.sh` | 9 | Scan a deck for used codepoints + safety base; subset the three theme HomuraM woff2 into `Projects/<slug>/assets/fonts/` (~97% reduction proven on the bilingual reference deck). |
+| `da2-cleanup-commits.sh` | (one-off) | Apply the 2026-05-19 Cowork flatten as 8 granular commits. Safe to re-run; each step no-ops if already committed. |
 
 `da2-new.sh` doesn't exist as a script — `/da2-new` is a Claude Code
 slash command (at `.claude/commands/da2-new.md`) that orchestrates the

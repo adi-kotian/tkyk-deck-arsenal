@@ -52,7 +52,7 @@ and stop if detection lands there.
   writes `Projects/<slug>/index.tsx`, returns a summary.
 - After it returns, **invoke the open script** via Bash:
   `./scripts/da2-open.sh <slug>` (with the slug being the project's
-  folder name, e.g. `2026-05-14_da2-tour`).
+  folder name, e.g. `2026-05-19_taikyoku-master-reference`).
 - The script checks the dev server is up and opens
   `http://localhost:5173/s/<slug>`. If the dev server isn't running, the
   script prints instructions and exits non-zero — surface that to the

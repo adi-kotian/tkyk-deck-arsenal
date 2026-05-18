@@ -5,24 +5,27 @@ description: Light editorial deck — cool→warm gradient on cover and section,
 
 # Taikyoku
 
-> **Contract version: Phase 7-reconciled (2026-05-18).** This document
-> was reconciled from the approved Phase 7 refinement interview
-> (`themes/taikyoku/REFINEMENT.md`, Sessions A + B + C). For the full
-> decision rationale and the Phase 8/9 `PENDING` work queue, read
-> REFINEMENT.md — it is the source of truth; this file is the
-> implementable contract.
+> **Contract version: Phase 11 + dark-mode (2026-05-19).** Phases
+> 7–11 + dark-mode token indirection are complete. For decision
+> rationale and the full supersession history, read
+> `themes/taikyoku/REFINEMENT.md` (restructured 2026-05-19 — current
+> rules on top, superseded history in the appendix). This file is
+> the implementable contract; the composition spec
+> (`themes/taikyoku/COMPOSITION.md`) is its operational companion.
 >
 > **Compatibility note (no regression):** `themes/taikyoku.demo.tsx`
-> and `Projects/2026-05-15_da2-retrospective/` predate this contract
-> version. They use Archivo caps and sentence-case headlines. That is
-> **frozen historical reference, not a regression** — per the brief's
-> no-breaking-change constraint they are not re-cased or re-fonted
-> unless deliberately touched later. New decks follow this contract.
+> and `Projects/_archive/2026-05-15_da2-retrospective/` predate this
+> contract version. They use Archivo caps and sentence-case headlines.
+> That is **frozen historical reference, not a regression** — per the
+> brief's no-breaking-change constraint they are not re-cased or
+> re-fonted unless deliberately touched later. New decks follow this
+> contract. (`da2-retrospective` was archived 2026-05-19 alongside the
+> other one-off / spike decks; see `Projects/_archive/README.md`.)
 >
-> **Provisional values:** new color hexes below tagged `PROVISIONAL`
-> are starting points; exact values are confirmed in Phase 8/9 against
-> the brand assets / rendered fonts (tracked as `PENDING` in
-> REFINEMENT.md).
+> **Open `PENDING` items (still open after Phase 11):** the
+> `earth` and `warm-energy` gradient-stop variants are not yet
+> specified (default cool ships). Everything else previously tagged
+> `PROVISIONAL` / `PENDING` is closed — see REFINEMENT.md §1.
 
 The visual identity is a **two-canvas** deck. Cover and section dividers
 carry the signature cool→warm gradient. Content slides drop to paper
@@ -81,7 +84,7 @@ opt-in; default is the cool→warm pair above.
 A **night** reading (light = daytime sky→sun; dark = deep indigo →
 ashen moonlit grey, overall dark, faint-ivory ink; supersedes the Brand
 Style Brief's navy→gold inversion; gold unchanged, still carries the
-one-moment). It was spiked on `Projects/2026-05-18_taikyoku-dark-spike/`
+one-moment). It was spiked on `Projects/_archive/2026-05-18_taikyoku-dark-spike/`
 (Session A Topic 6 — 4 archetypes, light→dark), the palette was
 **accepted by the user 2026-05-18**, and the **token-indirection
 refactor was completed 2026-05-19**: all 19 library components reference
@@ -90,7 +93,7 @@ block once at `:root` (next subsection). **Dark is now
 production-available** per deck (mono-mode like language — a deck is
 light *or* dark). Spike + go/no-go history:
 `themes/taikyoku/REFINEMENT.md` → Phase 9 Increment 3 + dark-mode phase.
-Canonical dark reference: `Projects/2026-05-18_taikyoku-dark-spike/`.
+Canonical dark reference: `Projects/_archive/2026-05-18_taikyoku-dark-spike/`.
 
 ### Theming tokens `--tk-*` — light & dark (productionized 2026-05-19)
 
@@ -906,9 +909,11 @@ header-commented (use / slots / density / motion), props with defaults.
   the other five are **canvas-agnostic content blocks** the composing
   Page wraps in a PaperCanvas (atomic, compose-into-Pages — Phase 7).
 - Gallery: `themes/taikyoku.gallery.tsx` (English-only per the Phase 8
-  references convention), viewable via
-  `Projects/2026-05-18_taikyoku-gallery/` at
-  `/s/2026-05-18_taikyoku-gallery`. All six + the gallery compile clean.
+  references convention), with the viewer at
+  `Projects/_archive/2026-05-18_taikyoku-gallery/` (archived
+  2026-05-19 — to view, restore via
+  `mv Projects/_archive/2026-05-18_taikyoku-gallery Projects/`).
+  All six + the gallery compile clean.
 ### Phase 9 — increment 2 (shipped 2026-05-18): Groups 1B + 1C
 
 All 19 Tier 1 components now exist (named by use). Group 1C absorbed the
@@ -1142,4 +1147,5 @@ export default [Cover];
   person roles; new Voice & language and Component library sections.
 - **Phase 6.1 (synthesis baseline):** original theme — Prata/Archivo,
   cover-only breath, gold usually on closer. Preserved in
-  `taikyoku.demo.tsx` + `da2-retrospective` (frozen reference).
+  `taikyoku.demo.tsx` + `Projects/_archive/2026-05-15_da2-retrospective/`
+  (frozen reference).

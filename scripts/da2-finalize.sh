@@ -21,7 +21,7 @@ set -euo pipefail
 SLUG="${1:-}"
 if [[ -z "$SLUG" ]]; then
   echo "Usage: $(basename "$0") <slug>" >&2
-  echo "Example: $(basename "$0") 2026-05-14_da2-tour" >&2
+  echo "Example: $(basename "$0") 2026-05-19_taikyoku-master-reference" >&2
   exit 64
 fi
 
