@@ -9,7 +9,7 @@ import type { OpenSlideConfig } from '@open-slide/core';
 // This is the one place where the vendored engine is configured for DA2. Every
 // other file under engine/ is untouched and managed via scripts/sync-engine.sh.
 //
-// See ENGINE_INVESTIGATION.md at DA2 root for the analysis of slidesDir.
+// See briefs/engine-investigation.md at DA2 root for the analysis of slidesDir.
 const openSlideConfig: OpenSlideConfig = {
   slidesDir: '../../../Projects',
   themesDir: '../../../themes',

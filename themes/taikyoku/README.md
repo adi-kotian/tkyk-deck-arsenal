@@ -1,24 +1,11 @@
-# Taikyoku — assets
+# Taikyoku — files in this directory
 
-Empty by design. The v1 theme uses Google Fonts at runtime (Prata, Archivo,
-Inter, JetBrains Mono) and no logo or icon assets — colour and typography
-carry the identity.
+| File / dir | Role |
+| --- | --- |
+| `COMPOSITION.md` | The composition spec — how compose-deck assembles a deck from the component library. §1.5 owns slide anatomy + named layouts + density floor + the support kit. Read whenever theme = taikyoku. |
+| `REFINEMENT.md` | The decision log. Top: current state of every locked rule. Bottom: superseded-history appendix (load-bearing — prevents re-litigating reversals). |
+| `components/` | 19 Tier-1 components (Phase 9). One `.tsx` per archetype, each hook-free, each redeclaring its own tokens (`c`) and fonts (`f`) inline for portability. Header comment per file is the authoritative slot/prop contract. Use the components as the spec; compose-deck **transcribes** them into the deck's `index.tsx` (one-file rule, COMPOSITION §1). |
+| `assets/fonts/` | Bundled **HomuraM** ×3 (Medium, SemiBold, Display — ~14 MB total). The source-of-truth for Japanese display type. **Decks never ship the full theme fonts** — `scripts/da2-subset-fonts.sh <slug>` cuts them to ~120 KB per weight (~97% smaller) and writes the subset to `Projects/<slug>/assets/fonts/`. Theme fonts are read-only. |
+| `assets/logos/` | TKYK brand mark — `TKYK-mark-dark.svg` (for light/gradient backgrounds) and `TKYK-mark-white.svg` (for dark/video backgrounds). Decks reference them via Vite import from `Projects/<slug>/assets/` (copy on use; do not relative-`url()` from a `<style>` block — open-slide's dev server won't serve it). |
 
-When a future deck genuinely needs a brand asset, decide where it belongs:
-
-- **One specific deck only** (a logo on this deck's cover) → drop it in
-  `Projects/<slug>/assets/`. The theme stays brand-light.
-- **Every Taikyoku deck** (a wordmark for every cover) → land it here, and
-  reference it from a fixed component in `../taikyoku.md`. Update the
-  theme contract so the asset is documented.
-
-What's intentionally not here yet:
-
-- `TKYK_logo-web-hq.svg`, `TKYK_logo-white.svg` — covered by the parent
-  brand brief but not adopted into the Taikyoku synthesis theme. If we
-  build a "Taikyoku Full" theme later, those land in that theme's
-  assets, not here.
-- The 大 kanji seal / 大局 wordmark — same reasoning.
-- Self-hosted font woff2 files — Google Fonts handles all four faces;
-  bundling licensed faces is deferred until offline rendering is a
-  real requirement.
+The theme contract itself lives one level up at `../taikyoku.md`.
