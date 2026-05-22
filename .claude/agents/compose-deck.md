@@ -261,6 +261,45 @@ authoritative; the load-bearing reversals:
 Full detail (catalog, mapping table, doctrine, language, assets):
 `themes/taikyoku/COMPOSITION.md`.
 
+## Phase 12 — Theme layouts (IMPORT these; don't transcribe)
+
+The 11 layout primitives at `themes/taikyoku/layouts/` are **theme
+infrastructure** — **IMPORT** them, do not transcribe. This is the
+deliberate asymmetry to the component library: components are
+transcribed into the deck (per-variant specialisation,
+frozen-with-deck); layouts are imported (stable, consistent across
+decks). Each layout file's header comment is the authoritative
+slot/prop contract.
+
+The named layouts in COMPOSITION.md §1.5 map to the files like so:
+
+| Named layout (`§1.5`) | File |
+| --- | --- |
+| `primary-rail`   | `Rail.tsx` |
+| `primary-band`   | `Band.tsx` |
+| `two-up`         | `TwoUp.tsx` |
+| `anchored-rail`  | `AnchoredRail.tsx` |
+| `dense-grid`     | `DenseGrid.tsx` |
+
+`Frame.tsx` / `Structural.tsx` wrap each content Page (use `Structural`
+when the inner component owns its own eyebrow + heading, e.g.
+`deck-contents` — drops Frame's chrome to avoid echo). The support kit
+(`Cards`, `Stat`, `Insight`, `LList`, `Annote`) composes inline
+**inside** the body region — they're slide furniture, not new
+components.
+
+Imports go at the top of the deck:
+
+```tsx
+import { Frame, Structural, Rail, Band, TwoUp, AnchoredRail, DenseGrid,
+         Cards, Stat, Insight, LList, Annote }
+  from '../../themes/taikyoku/layouts';
+```
+
+Reference deck: `Projects/2026-05-19_taikyoku-master-reference/index.tsx`.
+A layout bug-fix DOES propagate to already-composed decks — treat
+layouts as a versioned API.
+
 ## Return contract
 
 End your message with:

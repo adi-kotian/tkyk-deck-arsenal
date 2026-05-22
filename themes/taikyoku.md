@@ -639,6 +639,75 @@ Default language stance stays **Latin-only**; bilingual is per-deck
 opt-in (Session A Language lock). Use `single-latin` unless a deck
 explicitly engages Japanese.
 
+## Layouts (Phase 12)
+
+The 11 layout primitives at `themes/taikyoku/layouts/` are theme-level
+infrastructure for the COMPOSITION.md §1.5 anatomy + grammar. Each
+file's header comment is the authoritative slot/prop contract.
+
+**Layouts are imported from `themes/taikyoku/layouts/`. Components
+remain transcribed into the deck (one-file rule). See COMPOSITION.md
+§1.** A layout bug-fix DOES propagate to existing decks — treat layouts
+as a versioned API; breaking changes need a deliberate beat.
+
+### Chrome wrappers
+
+| File | Use |
+| --- | --- |
+| `Frame.tsx` | Universal content-slide chrome: eyebrow strip · action title (+ sub) · body region · source/method · folio. `jp` prop switches the action title to HomuraM. |
+| `Structural.tsx` | Variant of Frame for components that own their own eyebrow + heading (e.g. `deck-contents`). |
+
+### Named body layouts
+
+| File | COMPOSITION.md name | Shape |
+| --- | --- | --- |
+| `Rail.tsx` | `primary-rail` | 62 / 38 — primary left, supporting rail right |
+| `Band.tsx` | `primary-band` | Top 64 / bottom 30 — primary, bottom band of equal cells |
+| `TwoUp.tsx` | `two-up` | Two co-equal components + shared takeaway strip |
+| `AnchoredRail.tsx` | `anchored-rail` | Full-width primary + thin (~26 %) right rail |
+| `DenseGrid.tsx` | `dense-grid` | 2×2 / 2×3 grid of small cells (the densest layout) |
+
+The primary zone slots use `display:'block'` so block-level components
+fill 100 % of the zone width — load-bearing; see REFINEMENT.md
+Phase-11 feedback round 1.
+
+### Support kit (slide furniture)
+
+| File | Use |
+| --- | --- |
+| `Cards.tsx` | Row of 2–4 evidence cards |
+| `Stat.tsx` | Single stat callout — mono figure + caps label + optional context |
+| `Insight.tsx` | Accent dot + one sharp sentence |
+| `LList.tsx` | Labelled list — tracked-caps key / mono value rows |
+| `Annote.tsx` | Italic-Prata aside (margin-note register) |
+
+### Usage
+
+```tsx
+import { Frame, Rail, Stat, Insight, LList } from '../../themes/taikyoku/layouts';
+// ImageLed (component) is transcribed into the deck; Img is a content helper.
+
+<Frame
+  eyebrow="Field" meta="Site visit · Q2"
+  action="The Work Survives Contact With The Site"
+  sub="An image-led primary with a supporting read-out — not a bare photo."
+  source="Source: site audit, 2026-Q2 · n=3 sites" folio="01 · openers"
+>
+  <Rail
+    primary={<ImageLed variant="framed" eyebrow="Exhibit A" heading="On The Ground"
+                       caption="Q2 site" image={<Img />} />}
+    rail={<>
+      <Stat v="3" l="Sites audited" c="all on the same controls data" />
+      <Insight>The gap the deck closes is visible the moment you stand in the room.</Insight>
+      <LList items={[['Schedule','+6 wk slip'],['Change orders','2 soft'],['Coverage','100%']]} />
+    </>}
+  />
+</Frame>
+```
+
+(Verbatim from `Projects/2026-05-19_taikyoku-master-reference/index.tsx`
+— the "Field" slide.)
+
 ## Motion
 
 Philosophy: **considered, not austere**. Every motion choice should pass

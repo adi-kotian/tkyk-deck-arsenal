@@ -92,6 +92,14 @@ a supersession history.
 - Support kit (slide furniture, composed inline, NOT new components):
   stat-callout · insight · labelled-list · annotation · mini-source.
   [§2.5]
+- **Layouts are IMPORTED, not transcribed (Phase 12, 2026-05-22).**
+  The 11 layout primitives live at `themes/taikyoku/layouts/`
+  (`Frame` · `Structural` · `Rail` · `Band` · `TwoUp` · `AnchoredRail`
+  · `DenseGrid` · `Cards` · `Stat` · `Insight` · `LList` · `Annote`).
+  Deliberate asymmetry to the component library: layouts are stable
+  theme infrastructure (consistent across decks; a layout bug-fix DOES
+  propagate); components stay transcribed (frozen-with-deck).
+  [§2.4 · App: Phase-12 layout promotion]
 
 ### Dark mode (productionised 2026-05-19)
 - Per-deck, mono-mode (like language). A deck is light OR dark.
@@ -699,6 +707,41 @@ flipped and not re-litigate it. Entries are grouped by topic.
   each far fuller.
 - **Reason:** Phase 7's restraint discipline is per-component; the
   slide must be dense by construction.
+
+### App: Phase-12 (2026-05-22) — layout promotion (deck-local → theme-imported)
+
+- **Original (Phase 11, 2026-05-19):** the COMPOSITION.md §1.5 anatomy
+  + grammar (`Frame` / `Structural` / `Rail` / `Band` / `TwoUp` +
+  support kit) was a *spec* — its reference implementation lived
+  deck-local inside
+  `Projects/2026-05-19_taikyoku-master-reference/index.tsx`. The next
+  deck would either copy master-reference's scaffolding or re-derive
+  it. Either way fragile.
+- **Replacement (Phase 12, 2026-05-22):** the 10 deck-local layout
+  primitives promoted into `themes/taikyoku/layouts/` (PascalCase
+  files, named-only export, per-file `var(--tk-*, light)` token
+  redeclaration). Two more added — `AnchoredRail` (`anchored-rail`)
+  and `DenseGrid` (`dense-grid`) — so all five COMPOSITION.md §1.5
+  named layouts have files. Total **11 primitives + a barrel
+  `index.ts`**. Master-reference migrated to `import { … } from
+  '../../themes/taikyoku/layouts'`; ~100 lines dropped (429 → 331).
+- **Asymmetry codified:** layouts are **imported** (theme
+  infrastructure); components remain **transcribed** (deck content,
+  per-variant specialisation, frozen-with-deck). A layout bug-fix DOES
+  propagate to existing decks — treat layouts as a versioned API. Doc
+  trail: `themes/taikyoku/layouts/README.md`, taikyoku.md "Layouts
+  (Phase 12)", COMPOSITION.md §1 (layouts-vs-components paragraph) +
+  §1.5 (name-to-file cross-links), compose-deck "Phase 12 — Theme
+  layouts" subsection.
+- **Load-bearing preserved (D4):** zone slots stay `display:'block'`
+  so a block child fills the zone; `Structural` still drops Frame's
+  eyebrow to avoid double chrome; `Frame jp` still flips action title
+  to HomuraM + sub to Noto Sans JP. Verified by render-parity on
+  master-reference.
+- **Reason:** the spec stopped being deck-local scaffolding and became
+  first-class theme infrastructure. Next decks (and Stream 2-derived
+  composition subagents) build on a real layout surface instead of
+  re-deriving anatomy chrome.
 
 ### App: Phase-9 Increment-4 — font subsetting at finalize
 

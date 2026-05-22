@@ -75,6 +75,14 @@ Per-component slots/props: read the header comment in each component
 file (authoritative). Per-archetype design intent: REFINEMENT.md
 Session B.
 
+**Layouts vs components — different lifecycle.** Components are
+transcribed into the deck (per-variant specialisation,
+frozen-with-deck). **Layouts are imported from
+`themes/taikyoku/layouts/`** (stable theme infrastructure; consistent
+across decks). A layout bug-fix DOES propagate to existing decks —
+treat layouts as a versioned API; breaking changes need a deliberate
+beat. See `themes/taikyoku/layouts/README.md`.
+
 ## 1.5 Slide anatomy + multi-component grammar (Phase 11 — READ THIS)
 
 **The empty-slide failure mode and its fix.** A beat mapped to one
@@ -118,15 +126,22 @@ Each is a zone map with size budgets (after the 100px pad; usable ≈
 
 - **`primary-rail` (62 / 38)** — primary component left ~62%; a right
   rail (~38%) stacked with 2–3 supports (stat callout, insight, source
-  block). The default for chart/metric/comparison beats.
+  block). The default for chart/metric/comparison beats. → `Rail.tsx`
 - **`primary-band` (top 64 / bottom 30)** — primary across the top; a
-  bottom band of 2–4 equal support cells (mini-stats, takeaways).
+  bottom band of 2–4 equal support cells (mini-stats, takeaways). →
+  `Band.tsx`
 - **`two-up`** — two co-equal components side by side under one action
-  title + a shared takeaway strip (e.g. chart ⟷ comparison).
+  title + a shared takeaway strip (e.g. chart ⟷ comparison). →
+  `TwoUp.tsx`
 - **`anchored-rail`** — full-width primary with a thin (~26%) right
-  annotation/footnote rail (insights, definitions, source).
+  annotation/footnote rail (insights, definitions, source). →
+  `AnchoredRail.tsx`
 - **`dense-grid`** — action title + a 2×2 / 2×3 grid of small
-  components or callout cells; the densest layout.
+  components or callout cells; the densest layout. → `DenseGrid.tsx`
+
+(All five live at `themes/taikyoku/layouts/`. `Frame.tsx` / `Structural.tsx`
+wrap each Page; the support kit — `Cards`, `Stat`, `Insight`, `LList`,
+`Annote` — composes inside the body region.)
 
 Supporting elements draw from a small **support kit** (compose inline,
 theme-token styled): *stat-callout* (mono figure + caps label),
