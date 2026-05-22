@@ -188,7 +188,43 @@ Header comment of the generated `index.tsx`:
 
 ## Approval
 
-Three phrases (case-insensitive, detected by `/da2-advance`):
+Approval is **driven interactively by the orchestrator** (`/da2-advance`
+after blueprint draft, or the host on direct dispatch). You — the
+blueprint subagent — return a structured per-beat manifest (see Return
+contract below); the orchestrator uses **`AskUserQuestion`** to walk
+the user through approval one beat at a time, with full-deck approval
+available as an up-front shortcut.
+
+### What the orchestrator does after you return
+
+1. **First question (up-front shortcut):** "Approve all beats now, or
+   walk through each beat?" — options `Approve all` / `Walk through
+   each beat`.
+   - `Approve all` → flip every draft beat + top-level status to
+     `approved`; re-emit wireframe badges; advance.
+2. **Per-beat walk (if not "approve all"):** for each beat still in
+   `status: draft`, an `AskUserQuestion`:
+   > Beat `<id>` (`<layout_preset>`, N shadows).
+   > Approve · Revise · Skip (leave as draft)?
+
+   - **Approve** → flip that beat's status; move to the next.
+   - **Revise** → prompt: "What should change about `<id>`? (paste
+     wireframe comments, or describe.)" — the user replies in prose;
+     the orchestrator re-dispatches blueprint scoped to that beat with
+     the feedback. After re-dispatch, the walk resumes at the next
+     beat.
+   - **Skip** → leave that beat in `status: draft`; move on. The user
+     can come back via `/da2-advance` later.
+3. After the walk, if any beat is still `draft`, the orchestrator
+   reports what remains and stops. If all beats are `approved`, it
+   flips top-level `status: approved` and tells the user
+   `/da2-advance` will dispatch compose-deck next.
+
+### Textual phrases (always-available fallback)
+
+Power users can bypass the AskUserQuestion walk entirely by typing one
+of these directly. The orchestrator detects them in `/da2-advance`
+step 4 with the same effect as the interactive flow:
 
 | Phrase | Effect |
 | --- | --- |
@@ -243,21 +279,45 @@ blueprint`) declared the explicit `grid:` + `shadows:`. Honour it.
 
 ## Return contract
 
-End your message with:
+End your message with three blocks, in this order. The
+**per-beat manifest** (block 2) is load-bearing — the orchestrator
+parses it to construct `AskUserQuestion` calls for the interactive
+approval walk.
 
-1. A 3–5 line summary: how many beats blueprinted, which layout preset
-   each picked (or `custom`), any beats where the component pick was
-   ambiguous and the restrained default was used, any beats flagged
-   for missing storyboard content, any drift detected against
-   `storyboard_version`.
-2. The exact line:
+### 1. Prose summary (3–5 lines)
 
-> Blueprint drafted at `Projects/<slug>/blueprint.yaml` + wireframe at `Projects/<slug>-blueprint/`. Open `http://localhost:5173/s/<slug>-blueprint` to review. Reply **`approve blueprint <beat-id>`** per beat, **`approve blueprint all`** when everything looks right, or **`revise blueprint <beat-id>: …`** with feedback.
+How many beats blueprinted, which layout preset each picked (or
+`custom`), any beats where the component pick was ambiguous and the
+restrained default was used, any beats flagged for missing storyboard
+content, any drift detected against `storyboard_version`.
+
+### 2. Per-beat manifest (fenced YAML block, exact shape)
+
+```yaml
+manifest:
+  - id: <beat-id>           # exact match to blueprint.yaml beats[].id
+    status: draft|approved  # current per-beat status
+    layout_preset: <preset-or-"custom">
+    shadow_count: <int>
+    note: <one-line description of the beat's structural choice>
+```
+
+One entry per beat in `blueprint.yaml`, in the order they appear.
+This block is machine-parseable: the orchestrator reads it, picks the
+first beat with `status: draft`, and asks "Approve · Revise · Skip"
+via `AskUserQuestion` using the `id` + `note` for context.
+
+### 3. Approval prompt (exact line)
+
+> Blueprint drafted at `Projects/<slug>/blueprint.yaml` + wireframe at `Projects/<slug>-blueprint/`. Open `http://localhost:5173/s/<slug>-blueprint` to review. The orchestrator will walk you through per-beat approval — or type **`approve blueprint all`** to flip everything at once, **`approve blueprint <beat-id>`** for one beat, or **`revise blueprint <beat-id>: …`** with feedback.
 
 If revising:
 - Replace "drafted" with "revised" and prepend a one-line summary of
   what changed since the prior version.
-- Note which beats were preserved verbatim.
+- Note which beats were preserved verbatim. Their per-beat `status` in
+  the manifest preserves their pre-revision approval state — the
+  orchestrator will skip already-approved beats in the interactive
+  walk.
 
 ## When feedback reveals an upstream gap
 

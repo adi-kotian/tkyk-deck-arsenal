@@ -48,11 +48,67 @@ and stop if detection lands there.
 - After it returns, present the artifact summary to the user.
 - End with the structured approval prompt for that stage.
 
-#### Compose stage (storyboard approved, no slide)
+#### Blueprint stage (storyboard approved, no blueprint)
+
+- Dispatch the `blueprint` subagent. Pass the project path. It reads
+  memo + storyboard + theme + COMPOSITION.md + component headers, and
+  writes `Projects/<slug>/blueprint.yaml` + the wireframe deck at
+  `Projects/<slug>-blueprint/`. It returns a prose summary + a
+  **per-beat manifest** (fenced YAML block, `manifest: …`).
+- After it returns, **open the wireframe** in the browser:
+  `./scripts/da2-open.sh <slug>-blueprint`.
+- Then **drive the interactive approval walk** (next subsection).
+
+#### Blueprint approval walk (interactive)
+
+The blueprint subagent's return manifest is the input. Walk it via
+`AskUserQuestion`:
+
+1. **Up-front shortcut.** Single question with two options:
+   - `Approve all beats now` — flip every still-draft beat +
+     top-level `status: approved`; regenerate wireframe badges; tell
+     the user `/da2-advance` will dispatch compose-deck on the next
+     invocation. Done.
+   - `Walk through each beat` — proceed to step 2.
+
+2. **Per-beat loop.** For each beat in the manifest with
+   `status: draft`, ask via `AskUserQuestion`:
+   - Header: `<beat-id>`
+   - Question: `Beat <id> (<layout_preset>, N shadows). <note>.
+     Approve, revise, or skip?`
+   - Options:
+     - **Approve this beat** — edit `blueprint.yaml`: flip that
+       beat's `status: draft` → `status: approved`; append a log
+       entry; move to the next beat.
+     - **Revise this beat** — follow up in prose: "What should
+       change about `<id>`? Paste wireframe comments, or describe."
+       When the user replies, re-dispatch the `blueprint` subagent
+       scoped to that beat with the feedback. After the subagent
+       returns, re-emit the wireframe and resume the walk at the
+       next beat.
+     - **Skip (leave as draft)** — leave the beat in `status: draft`;
+       move on. The user can return via `/da2-advance` later.
+
+3. **After the walk.**
+   - If every beat is now `approved`: flip top-level
+     `status: draft` → `status: approved`; regenerate wireframe
+     badges; append `<YYYY-MM-DD HH:MM> approved blueprint (all
+     beats via walk)` to `log.md`; tell the user `/da2-advance`
+     will dispatch compose-deck on the next invocation.
+   - If any beats remain `draft`: list which ones; stop. The user
+     can re-run `/da2-advance` to resume from those.
+
+The textual phrases (`approve blueprint <id>` / `approve blueprint all`
+/ `revise blueprint <id>: …`) remain a **fallback** for users who
+prefer to type — they bypass the AskUserQuestion walk entirely and are
+detected in step 4 below.
+
+#### Compose stage (blueprint approved, no slide)
 
 - Dispatch the `compose-deck` subagent. Pass the project path. The
-  subagent reads memo + storyboard + theme + slide-authoring contract,
-  writes `Projects/<slug>/index.tsx`, returns a summary.
+  subagent reads memo + storyboard + **approved blueprint** + theme +
+  slide-authoring contract, writes `Projects/<slug>/index.tsx`,
+  returns a summary.
 - After it returns, **invoke the open script** via Bash:
   `./scripts/da2-open.sh <slug>` (with the slug being the project's
   folder name, e.g. `2026-05-19_taikyoku-master-reference`).
@@ -68,10 +124,16 @@ choosing to run `/da2-finalize` (Phase 4) when satisfied.
 
 #### Approval-pending stages (status: draft)
 
-Don't dispatch. Just present the current state and ask:
+For memo / storyboard: don't dispatch. Just present the current state
+and ask:
 
 > The <memo|storyboard> at `<path>` is currently `status: draft`. Reply
 > **`approve <memo|storyboard>`** to advance, or describe what to revise.
+
+For blueprint: the interactive walk above is the default. If the user
+returns to a project mid-walk (some beats approved, some still draft),
+re-read `blueprint.yaml` to find draft beats and resume the walk from
+the first one.
 
 ### 4. Approval phrase detection
 
