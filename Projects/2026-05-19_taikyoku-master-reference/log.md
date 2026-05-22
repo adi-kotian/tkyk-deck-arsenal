@@ -1,5 +1,23 @@
 # Log — Taikyoku Master Visual Reference Catalogue
 
+## Pending decisions
+
+_Entries queued here by the `apply-comments-triage` skill (Stream 3)
+when a `@slide-comment decide:` marker is swept. Resolve via
+`approve decision <id-short>` (advances + ticks the box) or
+`reject decision <id-short>: <reason>` (struck through, kept for
+posterity). Never silently edited._
+
+<!-- Entries appended below by apply-comments-triage. Format:
+- [ ] <YYYY-MM-DD> — <id-short> — <decoded note minus prefix> (route from `@slide-comment decide:`, marker id `c-<8hex>`)
+-->
+
+_No pending entries._
+
+---
+
+## History
+
 - **2026-05-19** — A **master visual reference catalogue**, not a
   pipeline product and not a production deck. Purpose: a single deck
   that surfaces *everything built across Phases 7–10 + dark mode* so

@@ -215,29 +215,46 @@ the repo:
 
 **Brief (historical reference):** `briefs/stream-4-blueprint-stage.md`.
 
-**Stream 3 remains:** the inspector-feedback loop polish. Briefs at
-`briefs/stream-3-feedback-loop.md` — design ready, no implementation
-yet.
+### Stream 3 — Tighter inspector → apply → verify loop — **DONE round 1 (2026-05-22)**
 
-### Stream 3 — Tighter inspector → apply → verify loop — **design ready**
+Round 1 ships the recommended pair: **P1** (comment-prefix triage) +
+**P3.a** (render smoke-check via dev-server log poll). What landed:
 
-Four proposed conventions / one tiny tool, addressing the Phase-11
-feedback frictions:
+- **`.claude/skills/apply-comments-triage/SKILL.md` (NEW)** —
+  user-facing entry for "apply comments". Parses each marker's
+  prefix (`fix:` / `decide:` / `brief:` / `ask:`; unprefixed →
+  `fix:`), splits by class, delegates `fix:` to the engine's
+  `apply-comments` skill (unchanged), routes `decide:` to
+  `Projects/<slug>/log.md` "Pending decisions", routes `brief:` to
+  `themes/<theme>/REFINEMENT.md` "Pending brief changes", answers
+  `ask:` in chat. Returns counts per class + smoke-check status +
+  per-entry approval phrases.
+- **`scripts/da2-dev.sh` (NEW)** — wraps `pnpm dev` with stdout+stderr
+  tee'd to `engine/.dev-server.log` (gitignored). Use instead of bare
+  `pnpm dev` when you plan to run the smoke-check.
+- **`scripts/da2-smoke-check.sh <slug>` (NEW)** — touches
+  `Projects/<slug>/index.tsx` to provoke HMR, sleeps 3 s, greps the
+  new tail of `engine/.dev-server.log` for transform / runtime
+  errors. Exit 0 on clean, exit 1 with the offending lines on
+  failure, exit 2 if the log file is absent (dev server not started
+  via `da2-dev.sh`).
+- **Queue conventions documented** — `themes/taikyoku/REFINEMENT.md`
+  gains a "## Pending brief changes (open for user ruling)" section
+  above §1 with the entry template; `Projects/2026-05-19_taikyoku-
+  master-reference/log.md` gains the parallel "## Pending decisions"
+  section. Approval phrases: `approve decision <id-short>` /
+  `reject decision <id-short>: <reason>`.
+- **Docs** — CLAUDE.md gains a "Skills" row for the triage skill plus
+  a new "Inspector loop (Stream 3)" section with the prefix grammar
+  table + open-follow-ups list. REFINEMENT.md gains an `App: Stream 3
+  round 1` appendix entry.
 
-- **P1** comment-prefix triage (`fix:` / `decide:` / `brief:` /
-  `ask:`) — biggest single win, eliminates doctrine-comments slipping
-  through the slide-edit sweep.
-- **P2** instance-local marker anchors (`data-anchor="slide-05/cards"`)
-  — kills the hoist-to-helper ambiguity.
-- **P3** render smoke-check in verify (a. dev-server log poll, b.
-  headless render, c. visual diff) — catches the count-up class of
-  runtime regressions.
-- **P4** batched feedback rounds (`begin sweep` keyword) — collapses
-  the comments-stream-faster-than-sweep race.
+**Brief (historical reference):** `briefs/stream-3-feedback-loop.md`.
 
-Design only — `briefs/stream-3-feedback-loop.md`. P1 + P3.a are the
-recommended "ship first" pair if exactly one round of work goes into
-this; P2 + P4 are quality-of-life.
+**Open follow-ups (future rounds — design exists, no impl):** P2
+(`data-anchor` per slide instance — kills helper-hoist ambiguity), P4
+(`begin sweep` keyword for batched feedback rounds), P3.b (headless
+render check via Playwright), P3.c (visual diff vs baseline).
 
 ## 5. Quick start for a fresh session
 

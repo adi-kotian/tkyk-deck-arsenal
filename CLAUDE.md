@@ -317,6 +317,33 @@ generic open-slide contract (read-only engine reference).
 | --- | --- | --- | --- |
 | `memo-to-minutes` | approved `memo.md`, `order.md` | `artifacts/minutes.md` | "draft minutes", "meeting minutes" |
 | `memo-to-one-pager` | approved `memo.md`, `order.md` | `artifacts/one-pager.md` | "draft one-pager", "summary doc" |
+| `apply-comments-triage` | `Projects/<slug>/index.tsx`, `@slide-comment` markers | `Projects/<slug>/{index.tsx, log.md}` + `themes/<theme>/REFINEMENT.md` queue sections; runs `scripts/da2-smoke-check.sh` after `fix:` sweeps | "apply comments", "sweep comments", "apply marker comments" |
 
 Skills sit at `.claude/skills/<skill-name>/SKILL.md`. No formal
 approval gate — derived artifacts are drafts the user edits.
+
+## Inspector loop (Stream 3)
+
+The browser inspector lets the user click a rendered element and
+attach a comment, persisted as a `@slide-comment` JSX marker in
+`Projects/<slug>/index.tsx`. When the user says "apply comments", the
+`apply-comments-triage` skill (above) splits markers by **prefix**
+before doing anything destructive:
+
+| Prefix | What happens |
+| --- | --- |
+| `fix:` (default if no prefix) | Apply the edit in place via the engine's `apply-comments` skill. After the sweep, `scripts/da2-smoke-check.sh` provokes HMR and tails `engine/.dev-server.log` for 3 s to catch transform / runtime errors. |
+| `decide:` | **Never auto-edits the slide.** Routed to `Projects/<slug>/log.md` under a "Pending decisions" section. Resolve with `approve decision <id-short>` or `reject decision <id-short>: <reason>`. |
+| `brief:` | **Never auto-edits the theme contract.** Routed to `themes/<theme>/REFINEMENT.md` "Pending brief changes (open for user ruling)". Same approval phrases. |
+| `ask:` | Answered in the chat reply. Marker removed; no file edit. |
+
+The smoke-check requires the dev server to be started via
+`./scripts/da2-dev.sh` (not bare `pnpm dev`), so its stdout is tee'd
+to `engine/.dev-server.log` for the check to read.
+
+**Open follow-ups (future rounds):** P2 (instance-local marker
+anchors via `data-anchor` — kills the helper-hoist ambiguity); P3.b
+(headless render check via Playwright — catches blank slides that
+log clean); P3.c (visual diff vs baseline); P4 (batched
+`begin sweep` keyword — collapses the comments-faster-than-sweep
+race). See `briefs/stream-3-feedback-loop.md`.

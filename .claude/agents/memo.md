@@ -75,7 +75,11 @@ shapes and will be confused by deck residue.
 3. If a source path is unresolvable, leave it in the `sources:` list with a
    `# unresolved: <reason>` comment and flag it in your return summary.
 4. Write no other files. No storyboard, no slide source, no derived
-   artifact. The memo is your only output.
+   artifact. The memo is your only output. (Note: `Projects/<slug>/log.md`
+   is shared project state — `/da2-advance` appends approval entries,
+   and the `apply-comments-triage` skill (Stream 3) may append a
+   "Pending decisions" section when a marker uses the `decide:` prefix.
+   You don't write to it; the convention is here for visibility.)
 5. Word budget: aim for one rendered page. Cut anything redundant — the
    memo is dense by design. If the project is genuinely large, lean on
    sources rather than padding the memo.

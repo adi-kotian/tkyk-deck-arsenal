@@ -21,6 +21,24 @@ calls". The top is what holds NOW.
 
 ---
 
+## Pending brief changes (open for user ruling)
+
+_Entries queued here by the `apply-comments-triage` skill (Stream 3)
+when a marker uses the `brief:` prefix (theme-contract / doctrine
+change). Resolve via `approve decision <id-short>` (moves the entry
+into the numbered sections plus an appendix entry per the supersession
+pattern) or `reject decision <id-short>: <reason>` (struck through,
+kept for posterity as a "we considered and declined" record). **Never
+silently edited** — every entry needs explicit user approval._
+
+<!-- Entries appended below by apply-comments-triage. Format:
+- [ ] <YYYY-MM-DD> — <id-short> — <decoded note minus prefix> (route from `@slide-comment brief:`, marker id `c-<8hex>`)
+-->
+
+_No pending entries._
+
+---
+
 ## 1. Locked constraints — quick index
 
 Every rule below has a `[§N]` link to the section that explains it and
@@ -785,6 +803,63 @@ flipped and not re-litigate it. Entries are grouped by topic.
   also gives the user a "newspaper layout before the editors fill
   it in" review artifact (the wireframe deck), which is exactly the
   mental model that surfaced in the Phase-11 feedback round.
+
+### App: Stream 3 round 1 (2026-05-22) — inspector-comment triage + render smoke-check
+
+- **Original (Phase 11):** "apply comments" had a single channel.
+  Every marker went through the same engine `apply-comments` sweep
+  — mechanical edits, doctrine reversals, theme-contract changes,
+  and questions all conflated. Phase-11 feedback round 1 hit this:
+  the `"update brief — I want count-up for large metrics"` comment
+  arrived as a marker and could have been auto-applied as a slide
+  edit; instead it was a theme-contract reversal that demanded an
+  appendix entry. Same channel, fundamentally different operations.
+  Separately, the count-up hook regression (`App: count-up hook
+  regression`) demonstrated that *transform-clean ≠ renders-clean*
+  — Vite's transform passed, the deck blanked at runtime, and the
+  failure was caught only at the next inspector visit.
+- **Replacement (Stream 3 round 1, 2026-05-22):** two
+  conventions / one tool, layered on top of the engine's
+  `apply-comments` skill without forking it.
+  1. **P1 — Comment-prefix triage.** Markers carry a one-word prefix
+     (`fix:` / `decide:` / `brief:` / `ask:`; unprefixed → `fix:` for
+     backward compat). The new DA2 skill
+     `.claude/skills/apply-comments-triage/SKILL.md` is the
+     user-facing entry for "apply comments": it scans markers, splits
+     by class, delegates `fix:` to the engine skill, routes `decide:`
+     to `Projects/<slug>/log.md` "Pending decisions", routes `brief:`
+     to `themes/<theme>/REFINEMENT.md` "Pending brief changes",
+     answers `ask:` in chat. Resolution requires explicit
+     `approve decision <id-short>` or `reject decision <id-short>:
+     <reason>` — **no doctrine drift via slide markers**.
+  2. **P3.a — Render smoke-check.** Two scripts. `scripts/da2-dev.sh`
+     wraps `pnpm dev` with stdout+stderr tee'd to
+     `engine/.dev-server.log` (gitignored). `scripts/da2-smoke-check.sh
+     <slug>` provokes HMR, sleeps 3 s, greps the new tail for
+     transform/runtime errors. Called by the triage skill after any
+     `fix:` sweep that touched the deck. Catches the count-up class
+     of regressions in 3 seconds instead of "at the next inspector
+     visit". No new dependencies.
+- **Queue conventions documented.** New "Pending brief changes" top
+  section above §1 of this file (the queue template lives there).
+  Project log.md files get a parallel "Pending decisions" section
+  template (master-reference's log.md updated as the reference).
+  Both surface in `apply-comments-triage`'s return summary with
+  the exact approval phrase to use.
+- **Out of scope for round 1 (open follow-ups, designs ready):**
+  - P2 — instance-local `data-anchor` per marker target site, to
+    kill the "marker hoisted to shared helper → ambiguous which
+    slide" pathology.
+  - P3.b — headless Playwright render check (catches blank slides
+    that log clean).
+  - P3.c — visual diff vs a baseline screenshot.
+  - P4 — `begin sweep` keyword to batch markers into discrete
+    feedback rounds.
+- **Reason:** doctrine drift via inspector markers was a real
+  near-miss (count-up reversal); the cost of a triage layer was
+  one new skill + two scripts. Worth it. The smoke-check pays for
+  itself the first time it catches a runtime regression that
+  passed transform.
 
 ### App: Phase-12 (2026-05-22) — layout promotion (deck-local → theme-imported)
 
