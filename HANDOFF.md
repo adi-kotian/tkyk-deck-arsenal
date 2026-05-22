@@ -137,52 +137,76 @@ What did NOT land here:
   needs deletion (the same lock issue blocks it). `git clean -fdx` or
   `rm -f .test-stale-lock` outside the sandbox.
 
-### Stream 2 — Promote layout primitives into the theme — **prompt staged**
+### Stream 2 — Promote layout primitives into the theme — **DONE 2026-05-22**
 
-The 10 layout primitives (`Frame · Rail · Band · TwoUp · Structural ·
-Cards · Stat · Insight · LList · Annote`) plus 2 new ones
-(`AnchoredRail · DenseGrid` — the missing named layouts from
-COMPOSITION.md §1.5) get promoted into `themes/taikyoku/layouts/`.
-After this lands, compose-deck assembles from named layouts +
-components; the anatomy stops being deck-local scaffolding.
+The 10 layout primitives from master-reference + 2 new ones
+(`AnchoredRail · DenseGrid`) landed at `themes/taikyoku/layouts/`.
+Master-reference now `import`s them and is ~100 lines lighter (429 →
+331). All four contracts (taikyoku.md / COMPOSITION.md / compose-deck
+agent / REFINEMENT.md) document the asymmetry: **layouts are imported
+(stable infrastructure); components remain transcribed (per-deck
+specialisation, frozen-with-deck)**. REFINEMENT.md §3 has a Phase-12
+appendix entry.
 
-**Prompt:** `briefs/stream-2-layout-promotion.md`. Six phases (A read
-→ B scaffold → C migrate master-reference → D update docs → E verify
-→ F commit), rollback strategy included. Run in Claude Code at the
-repo root.
+**Branch / commits (now on `main`):**
+- `8cab174` `feat(layouts): scaffold themes/taikyoku/layouts/ with 11 primitives`
+- `9ffaded` `refactor(master-reference): import layouts from theme`
+- `d6b02e5` `docs: document layouts in taikyoku.md / COMPOSITION.md / compose-deck / REFINEMENT.md`
 
-**Key locked decision in the prompt:** layouts are **imported** from
-the theme (stable infrastructure, consistent across decks);
-components remain **transcribed** (per-deck specialisation, frozen-
-with-deck). REFINEMENT.md will gain a Phase-12 appendix entry when
-this lands.
+**Brief (historical reference):** `briefs/stream-2-layout-promotion.md`.
 
-### Stream 4 — Blueprint stage (new pipeline layer between storyboard and compose) — **prompt staged**
+### Stream 4 — Blueprint stage (new pipeline layer between storyboard and compose) — **DONE 2026-05-22**
 
-Adds a `blueprint` subagent between storyboard and compose-deck.
-Storyboard simplifies to pure content (drops `primary` / `supporting`
-/ `layout`). The blueprint subagent emits per-beat **content-shadow
-grids** inside a fixed **content area** (1720 × 720, locked theme
-primitive) — each cell naming a component + a one-line content
-summary. It also writes a **companion wireframe deck** at
-`Projects/<slug>-blueprint/` served in the dev server, so the user
-reviews each beat as an empty-newspaper layout before any content
-rendering happens.
+A new pipeline stage between `storyboard` and `compose` produces a
+per-beat structural blueprint of each slide's content area; gates
+compose-deck behind per-beat blueprint approval. After this lands the
+empty-slide failure mode moves from "spotted at render time" to
+"spotted at blueprint review, before any composition." What's now in
+the repo:
 
-**Per-beat approval** (`approve blueprint <beat-id>` /
-`approve blueprint all`). compose-deck waits until every beat is
-approved, then composes from the blueprint as structural truth and
-the storyboard as content truth.
+- **New subagent `.claude/agents/blueprint.md`** — reads memo +
+  storyboard + theme + COMPOSITION.md + each component's header
+  comment; writes `Projects/<slug>/blueprint.yaml` + a deterministic
+  wireframe deck at `Projects/<slug>-blueprint/index.tsx`. Validates
+  grid coverage, refuses on failure, supports per-beat approval.
+- **Storyboard contract rewritten (D2).** `.claude/agents/storyboard.md`
+  + `Templates/STORYBOARD.yaml` drop `primary` / `supporting` /
+  `layout`. Per-beat shape is now `key_message` + `action_title` +
+  `sub` + `source` + `facts[]` + `quotes[]` + `notes` — content only.
+  Hard rule 7 reverses: storyboard MUST NOT declare components,
+  layouts, or grids.
+- **compose-deck reads blueprint as structural truth (D9).** Input #7
+  is the approved blueprint. New "Phase 13 — Blueprint-driven
+  composition" section in `.claude/agents/compose-deck.md`. Refusal
+  conditions extended (missing / draft / stale blueprint,
+  content-summary unmatched).
+- **`/da2-advance` state machine extended (D10).** Two new rows for
+  blueprint draft + approved; full approval-phrase detection for
+  `approve blueprint <id>` / `approve blueprint all` /
+  `revise blueprint <id>: …`.
+- **ContentArea theme primitive (D4).** `themes/taikyoku.md` "Content
+  Area" section: locked geometry `1720 × 720`, action-title clamp 2
+  lines, source-strip 40 px. CLAUDE.md "Locked Taikyoku constraints"
+  gains the ContentArea bullet.
+- **COMPOSITION.md §1.5** cross-links each named layout to its
+  blueprint grid (`primary-rail` → `Rail.tsx` · grid 12×6: primary
+  col 1..7 · rail col 8..12). New "two surfaces" paragraph
+  distinguishes the named-layout vocabulary from the blueprint
+  instantiations.
+- **Phase-I verification artifacts** — `Projects/2026-05-19_taikyoku-
+  master-reference/blueprint.yaml` (manually constructed; 4 beats
+  covering 3 layout presets, one beat APPROVED to demo the badge
+  flip) + the companion wireframe deck at
+  `Projects/2026-05-19_taikyoku-master-reference-blueprint/`. HTTP
+  200, no transform errors. Note: `storyboard_version: 0` marks
+  this as a manual blueprint (master-reference has no upstream
+  storyboard).
 
-**Prompt:** `briefs/stream-4-blueprint-stage.md`. Ten phases
-(A–J) with an explicit STOP after Phase A for user confirmation of
-the storyboard contract rewrite (D2 is the most disruptive piece).
-Includes the full `blueprint.yaml` schema + state-machine extension
-+ wireframe-deck spec + ContentArea theme contract.
+**Brief (historical reference):** `briefs/stream-4-blueprint-stage.md`.
 
-**Recommended order:** Stream 2 → Stream 4 → Stream 3. Stream 2 gives
-ContentArea a clean home; Stream 4 builds on it; Stream 3 polishes
-the loop.
+**Stream 3 remains:** the inspector-feedback loop polish. Briefs at
+`briefs/stream-3-feedback-loop.md` — design ready, no implementation
+yet.
 
 ### Stream 3 — Tighter inspector → apply → verify loop — **design ready**
 

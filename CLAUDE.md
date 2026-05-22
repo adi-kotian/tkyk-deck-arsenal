@@ -78,18 +78,28 @@ scripts/                         Operational scripts.
    **Pauses for `approve memo`.** Memo is universal context — feeds
    deck, minutes, one-pager.
 3. **Storyboard** — `storyboard` subagent reads approved memo + chosen
-   recipe, drafts `storyboard.yaml`. Plans every content beat to the
-   **slide anatomy** (COMPOSITION.md §1.5): `action_title` + `primary`
-   + ≥2 `supporting` + `source` + named `layout`. **Pauses for
-   `approve storyboard`.**
-4. **Compose** — `compose-deck` subagent reads memo + storyboard +
-   theme + COMPOSITION.md + the engine's `slide-authoring` skill.
-   Writes one file: `Projects/<slug>/index.tsx`. Assembles to the
-   anatomy/density floor; transcribes library components into the
-   one-file deck (see COMPOSITION.md §1 — transcribe-not-import).
-5. **Edit** — entirely in open-slide. Inspector clicks → comments →
+   recipe, drafts `storyboard.yaml`. **Content only** (Stream 4 / D2):
+   per beat = `key_message` + `action_title` + `sub` + `source` +
+   `facts[]` + `quotes[]` + `notes`. No component or layout picks —
+   those live in blueprint. **Pauses for `approve storyboard`.**
+4. **Blueprint** — `blueprint` subagent reads approved storyboard +
+   COMPOSITION.md, drafts `blueprint.yaml` (per-beat grid + shadows)
+   AND a companion wireframe deck at `Projects/<slug>-blueprint/`
+   served at `/s/<slug>-blueprint`. **Per-beat approval:**
+   `approve blueprint <beat-id>` / `approve blueprint all` /
+   `revise blueprint <beat-id>: …`. compose-deck is gated behind
+   top-level `status: approved`.
+5. **Compose** — `compose-deck` subagent reads memo + storyboard +
+   blueprint + theme + COMPOSITION.md + the engine's `slide-authoring`
+   skill. Writes one file: `Projects/<slug>/index.tsx`. Executes the
+   blueprint: each shadow's grid cell renders the named component
+   with content drawn from the storyboard's facts/quotes/notes.
+   Refuses if any shadow's content can't be matched. Transcribes
+   library components into the one-file deck (COMPOSITION.md §1 —
+   transcribe-not-import).
+6. **Edit** — entirely in open-slide. Inspector clicks → comments →
    "apply comments" → the engine's `apply-comments` skill sweeps them.
-6. **Finalize** — `/da2-finalize` runs open-slide's HTML + PDF export
+7. **Finalize** — `/da2-finalize` runs open-slide's HTML + PDF export
    (browser-side), `scripts/da2-finalize.sh` lands files in
    `Projects/<slug>/exports/`. JP decks: run
    `scripts/da2-subset-fonts.sh <slug>` first (the finalize script
@@ -196,6 +206,12 @@ operator sees them without reading three docs.
   action title (the so-what), body (primary + ≥2 supporting), source/
   method line, folio. Fills ≈85–90% of the canvas. A lone centred
   component is the empty-slide bug — **forbidden**.
+- **Content Area (Stream 4)** — the body region between action title
+  and source strip is a locked-geometry `1720 × 720` rectangle,
+  absolute across slides. Blueprint shadows declare grid placement
+  inside this rectangle; the action title clamps to 2 lines; the
+  source strip is always 40 px tall. See `themes/taikyoku.md`
+  "Content Area" + `Projects/<slug>/blueprint.yaml`.
 
 ## Rules
 
@@ -261,7 +277,9 @@ swap.
 | 10 | Integration capstone (seed-pack deck through the full pipeline) + the compose-deck ↔ library wiring. | done |
 | 11 | Composition-density: slide **anatomy** + **multi-component layout grammar** in COMPOSITION.md §1.5; agents upgraded; master-reference rebuilt dense. | done |
 | Dark-mode | Productionised via CSS-variable token indirection (`var(--tk-*)`, per-slide `TK_LIGHT`/`TK_DARK` wrapper). | done |
-| Future | `component-from-screenshot` skill · reserved slot #15 / new archetypes · Stream-2 layout primitive promotion · Stream-3 inspector-feedback loop. | not started |
+| Stream 2 | Layout primitive promotion: 11 layouts at `themes/taikyoku/layouts/` (Frame · Structural · Rail · Band · TwoUp · AnchoredRail · DenseGrid + Cards · Stat · Insight · LList · Annote). Imported, not transcribed. | done |
+| Stream 4 | Blueprint stage between storyboard and compose. New `blueprint` subagent. Storyboard rewritten to content-only. ContentArea (1720×720) theme primitive locked. compose-deck reads blueprint as structural truth. | done |
+| Future | `component-from-screenshot` skill · reserved slot #15 / new archetypes · Stream-3 inspector-feedback loop. | not started |
 
 `HANDOFF.md` carries the granular state of any in-flight work between
 sessions.
@@ -281,8 +299,9 @@ Full contracts: `.claude/commands/da2-*.md`.
 | Agent | Reads | Writes | Approval phrase |
 | --- | --- | --- | --- |
 | `memo` | `order.md`, sources | `memo.md` | `approve memo` |
-| `storyboard` | approved `memo.md`, recipe, COMPOSITION.md (§1.5) | `storyboard.yaml` | `approve storyboard` |
-| `compose-deck` | approved memo + storyboard + theme + COMPOSITION.md + components + slide-authoring skill | `index.tsx` | _(no gate)_ |
+| `storyboard` | approved `memo.md`, recipe (content-only per Stream 4) | `storyboard.yaml` | `approve storyboard` |
+| `blueprint` | approved memo + storyboard + theme + COMPOSITION.md §1.5 + components | `blueprint.yaml` + `Projects/<slug>-blueprint/index.tsx` | `approve blueprint <beat-id>` / `approve blueprint all` |
+| `compose-deck` | approved memo + storyboard + **approved blueprint** + theme + COMPOSITION.md + components + slide-authoring skill | `index.tsx` | _(no gate; gated by blueprint upstream)_ |
 
 `compose-deck` has no approval gate by design. Editing happens in the
 browser via open-slide's inspector loop. "Approval" = the user runs

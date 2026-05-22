@@ -127,21 +127,36 @@ Each is a zone map with size budgets (after the 100px pad; usable ≈
 - **`primary-rail` (62 / 38)** — primary component left ~62%; a right
   rail (~38%) stacked with 2–3 supports (stat callout, insight, source
   block). The default for chart/metric/comparison beats. → `Rail.tsx`
+  · blueprint grid 12×6: primary `col 1..7 / row 1..6` · rail
+  `col 8..12 / row 1..6`
 - **`primary-band` (top 64 / bottom 30)** — primary across the top; a
   bottom band of 2–4 equal support cells (mini-stats, takeaways). →
-  `Band.tsx`
+  `Band.tsx` · blueprint grid 12×6: primary `col 1..12 / row 1..4` ·
+  band `col 1..12 / row 5..6` (split into 2–4 cells)
 - **`two-up`** — two co-equal components side by side under one action
   title + a shared takeaway strip (e.g. chart ⟷ comparison). →
-  `TwoUp.tsx`
+  `TwoUp.tsx` · blueprint grid 12×6: a `col 1..6 / row 1..5` · b
+  `col 7..12 / row 1..5` · takeaway `col 1..12 / row 6`
 - **`anchored-rail`** — full-width primary with a thin (~26%) right
   annotation/footnote rail (insights, definitions, source). →
-  `AnchoredRail.tsx`
+  `AnchoredRail.tsx` · blueprint grid 12×6: primary `col 1..9 /
+  row 1..6` · annot `col 10..12 / row 1..6`
 - **`dense-grid`** — action title + a 2×2 / 2×3 grid of small
   components or callout cells; the densest layout. → `DenseGrid.tsx`
+  · blueprint grid 12×6: 6 cells, 3×2: `col 1..4 / 5..8 / 9..12` ×
+  `row 1..3 / 4..6`
 
 (All five live at `themes/taikyoku/layouts/`. `Frame.tsx` / `Structural.tsx`
 wrap each Page; the support kit — `Cards`, `Stat`, `Insight`, `LList`,
 `Annote` — composes inside the body region.)
+
+**Two surfaces (Stream 4).** This spec defines the *named-layout
+vocabulary* (the five presets above). The **blueprint stage**
+instantiates them as concrete grids in `Projects/<slug>/blueprint.yaml`
+(see `.claude/agents/blueprint.md`). A custom blueprint can declare
+any `grid:` it wants; the named presets above are the fast path.
+compose-deck then executes the blueprint's grid + shadows against the
+storyboard's content.
 
 Supporting elements draw from a small **support kit** (compose inline,
 theme-token styled): *stat-callout* (mono figure + caps label),
