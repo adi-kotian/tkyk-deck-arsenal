@@ -1,11 +1,13 @@
-# Storyboard — references a recipe + fills per-deck content.
+# Storyboard — references a recipe + fills per-deck CONTENT (Stream 4 / D2).
 #
 # A recipe (`recipes/<name>.yaml`) defines the *structure* — a sequence of
 # beats with purposes and density. This file fills the *content* — the
-# headline message and any per-beat overrides for this specific deck.
+# claim, the so-what headline, the concrete facts/quotes, and the source.
 #
-# To make a new deck that's structurally identical to an existing one:
-# copy this file, swap the content blocks, point at the same recipe.
+# What's NOT here (post-Stream-4): components, layouts, grids. Those live
+# in `blueprint.yaml`, emitted by the blueprint subagent after storyboard
+# approval. If you have layout intent, put it in a beat's `notes` field;
+# the blueprint stage reads it.
 
 memo: ./memo.md
 memo_version: 1
@@ -20,12 +22,25 @@ mix: false                     # if true, allows per-beat theme overrides (rarel
 # `<purpose>:1`, `<purpose>:2`.
 content:
   cover:
-    key_message: "<one-sentence headline shown on the cover>"
-    eyebrow: "<optional small label, e.g. 'For the leadership team'>"
+    key_message: "<one-sentence pitch — the deck's whole thesis in one line>"
+    action_title: "<the cover headline shown in Prata, Title Case>"
+    sub: "<optional one-line subhead>"
+    source: ""                                # cover/closing exempt from source
+    facts: []                                 # cover/closing usually empty
+    quotes: []
+    notes: "<freeform — e.g. 'eyebrow = audience descriptor'>"
 
-  # Repeat one block per beat:
-  # <purpose>:
-  #   key_message: "<one sentence>"
-  #   bullets: ["...", "...", "..."]      # optional; depends on the beat
-  #   sources: ["./sources/<file>"]       # optional; provenance
-  #   notes: "<freeform direction for the composer>"
+  # Repeat one block per beat in the recipe. Example content beat:
+  #
+  # validation:
+  #   key_message: "Pipeline shifted to self-serve in two quarters."
+  #   action_title: "73% Of Pipeline Is Now Self-Serve"
+  #   sub: "Up from 41% a year ago. The retention base alone funds the next stage."
+  #   source: "1,240 closed-won, FY25→26, ex-migrations"
+  #   facts:
+  #     - { label: "Self-serve share now",       value: "73%" }
+  #     - { label: "Self-serve share a year ago", value: "41%" }
+  #     - { label: "YoY change",                  value: "+32pp",
+  #         note: "no added sales headcount" }
+  #   quotes: []
+  #   notes: "Self-serve is the default; sales-assist is the exception."
