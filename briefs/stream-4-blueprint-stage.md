@@ -1,8 +1,8 @@
 ---
 doc: stream-4-blueprint-stage
-status: design + CC prompt — ready to execute
+status: shipped 2026-05-22 — commits 3ae6c8f · 66ee24b · 8919ec5 · 92b243a (on main)
 written: 2026-05-19 (Cowork)
-audience: future Claude Code session adding the blueprint stage to the pipeline
+audience: historical reference — the design + CC prompt that produced the blueprint pipeline stage
 related: HANDOFF.md (§4 streams) · themes/taikyoku/COMPOSITION.md §1.5 ·
   .claude/agents/{memo,storyboard,compose-deck}.md ·
   briefs/stream-2-layout-promotion.md (sibling; orthogonal)

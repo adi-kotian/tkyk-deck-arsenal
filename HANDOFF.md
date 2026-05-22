@@ -181,9 +181,20 @@ the repo:
   conditions extended (missing / draft / stale blueprint,
   content-summary unmatched).
 - **`/da2-advance` state machine extended (D10).** Two new rows for
-  blueprint draft + approved; full approval-phrase detection for
-  `approve blueprint <id>` / `approve blueprint all` /
-  `revise blueprint <id>: …`.
+  blueprint draft + approved.
+- **Interactive per-beat approval (AskUserQuestion-driven).** When
+  `/da2-advance` lands on a draft blueprint, the orchestrator opens
+  the wireframe in the browser, then walks the user through approval:
+  first an up-front "Approve all / Walk through each beat" question;
+  then per draft beat a 3-option question (Approve / Revise / Skip).
+  Revise prompts for prose feedback and re-dispatches blueprint
+  scoped to that beat. The blueprint subagent's return contract
+  includes a structured **per-beat manifest** (fenced YAML block with
+  `id` · `status` · `layout_preset` · `shadow_count` · `note`) the
+  orchestrator parses to construct the AskUserQuestion calls. The
+  textual phrases (`approve blueprint <id>` / `approve blueprint all`
+  / `revise blueprint <id>: …`) remain as a fallback for users who
+  prefer typing.
 - **ContentArea theme primitive (D4).** `themes/taikyoku.md` "Content
   Area" section: locked geometry `1720 × 720`, action-title clamp 2
   lines, source-strip 40 px. CLAUDE.md "Locked Taikyoku constraints"

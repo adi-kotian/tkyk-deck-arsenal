@@ -1,8 +1,8 @@
 ---
 doc: stream-2-layout-promotion
-status: design + CC prompt — ready to execute
+status: shipped 2026-05-22 — commits 8cab174 · 9ffaded · d6b02e5 (on main)
 written: 2026-05-19 (Cowork flatten pass)
-audience: future Claude Code session promoting layout primitives into the theme
+audience: historical reference — the design + CC prompt that produced themes/taikyoku/layouts/
 related: HANDOFF.md (§4 Stream 2) · themes/taikyoku/COMPOSITION.md §1.5 ·
   Projects/2026-05-19_taikyoku-master-reference/index.tsx (source)
 ---

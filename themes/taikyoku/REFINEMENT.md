@@ -100,6 +100,27 @@ a supersession history.
   theme infrastructure (consistent across decks; a layout bug-fix DOES
   propagate); components stay transcribed (frozen-with-deck).
   [§2.4 · App: Phase-12 layout promotion]
+- **ContentArea is a locked Taikyoku primitive (Phase 13, Stream 4,
+  2026-05-22).** Frame's body region is a fixed `1720 × 720` slot
+  (canvas 1920 × 1080 minus 100 px L/R + the action title + sub
+  region + 40 px source strip + folio). Action title clamps to 2
+  lines (`-webkit-line-clamp:2; overflow:hidden`). Source strip is a
+  guaranteed 40 px tall. **"Col 1..4" must mean the same pixel
+  rectangle on every slide** — that's the precision the blueprint
+  stage's review surface depends on. Tokens: `--tk-content-w` /
+  `--tk-content-h` / `--tk-content-grid-cols` / `--tk-content-grid-rows`
+  / `--tk-content-grid-gap`. [§2.5 + taikyoku.md "Content Area" ·
+  App: Phase-13 blueprint stage]
+- **Storyboard owns content; blueprint owns layout (Phase 13, Stream
+  4, 2026-05-22).** Named layouts in §1.5 are now a **two-surface
+  vocabulary**: this spec defines the names + canonical grids; the
+  DA2 blueprint stage (`.claude/agents/blueprint.md`) instantiates
+  them as concrete grids in `Projects/<slug>/blueprint.yaml`. The
+  storyboard subagent no longer reads §1.5; it carries content only
+  (`key_message`, `action_title`, `sub`, `source`, `facts`, `quotes`,
+  `notes`). The "density floor" enforcement moves from
+  storyboard-side ("≥2 supporting components") to blueprint-side
+  ("exact grid coverage"). [§2.5 · App: Phase-13 blueprint stage]
 
 ### Dark mode (productionised 2026-05-19)
 - Per-deck, mono-mode (like language). A deck is light OR dark.
@@ -707,6 +728,63 @@ flipped and not re-litigate it. Entries are grouped by topic.
   each far fuller.
 - **Reason:** Phase 7's restraint discipline is per-component; the
   slide must be dense by construction.
+
+### App: Phase-13 (2026-05-22) — blueprint stage + ContentArea + storyboard content-only
+
+- **Original (Phase 11):** the storyboard subagent carried both
+  content *and* structure. Per-beat fields: `key_message` +
+  `action_title` + `primary{component,variant,density,content}` +
+  `supporting[≥2]` + `source` + `layout` (named-preset) + `notes`.
+  compose-deck consumed the storyboard directly and decided how the
+  components landed on the canvas. The empty-slide failure mode
+  ("approved storyboard → bare slide") was the recurring symptom of
+  reviewing content and structure in one breath.
+- **Replacement (Stream 4, 2026-05-22):** a new pipeline stage sits
+  between storyboard and compose. Storyboard simplifies to **content
+  only**; a new `blueprint` subagent owns layout selection +
+  per-cell content placement; compose-deck executes the blueprint.
+  Three artifacts make this load-bearing:
+  1. **ContentArea (D4)** — taikyoku.md gains a "Content Area"
+     section declaring a **locked `1720 × 720` rectangle** as Frame's
+     body region (action title clamped to 2 lines, source strip
+     fixed at 40 px). Tokens `--tk-content-w/h/grid-cols/grid-rows/
+     grid-gap`. "Col 1..4" is now an absolute pixel rectangle, not a
+     relative ratio — the precision the wireframe-review surface
+     depends on.
+  2. **blueprint subagent (D1–D10)** — `.claude/agents/blueprint.md`
+     reads memo + storyboard + theme + COMPOSITION.md §1.5 + each
+     component's header; writes `Projects/<slug>/blueprint.yaml` (a
+     per-beat grid + shadows spec) + a deterministic wireframe deck
+     at `Projects/<slug>-blueprint/index.tsx` served at
+     `/s/<slug>-blueprint`. Validates grid coverage (every cell
+     covered exactly once, no overlaps, named components exist,
+     content_summary substantiable from storyboard data); refuses to
+     emit on validation failure.
+  3. **Two-surface §1.5 (workflow + COMPOSITION.md §1.5
+     cross-links)** — the named layouts (`primary-rail`,
+     `primary-band`, `two-up`, `anchored-rail`, `dense-grid`)
+     become **blueprint presets** with explicit grids inline in §1.5
+     (`primary-rail` → grid 12×6: primary col 1..7 / rail col 8..12,
+     etc.). A custom blueprint can declare any grid; named presets
+     are the fast path.
+- **Interactive per-beat approval (2026-05-22 refinement).**
+  `/da2-advance` drives blueprint approval via `AskUserQuestion`:
+  up-front "Approve all / Walk through each beat", then per draft
+  beat a 3-option question (Approve · Revise · Skip). The blueprint
+  subagent's return contract carries a structured per-beat manifest
+  (`id` · `status` · `layout_preset` · `shadow_count` · `note`) the
+  orchestrator parses to build the questions. Textual phrases
+  (`approve blueprint <id>` / `... all` / `revise blueprint <id>:
+  ...`) remain as a fallback for typing users.
+- **compose-deck refusal extended.** Refuses on missing / draft /
+  stale blueprint, or when a shadow's content_summary can't be
+  matched to concrete storyboard data. Routes the user upstream
+  (storyboard or blueprint subagent) for the actual fix.
+- **Reason:** content quality and structural quality are different
+  judgements — same review surface confused them. Splitting them
+  also gives the user a "newspaper layout before the editors fill
+  it in" review artifact (the wireframe deck), which is exactly the
+  mental model that surfaced in the Phase-11 feedback round.
 
 ### App: Phase-12 (2026-05-22) — layout promotion (deck-local → theme-imported)
 
