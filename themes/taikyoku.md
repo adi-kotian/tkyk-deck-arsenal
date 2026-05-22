@@ -321,6 +321,10 @@ Ratios are starting points to tune against rendered HomuraM.
   not breathe (breath removed entirely, Phase 8 2026-05-18).
 - Gold (`accent-hot`) is assigned to **one deliberately-chosen moment
   per deck** — see Gold rule.
+- **The Frame's body region IS the content area** — a fixed 1720 × 720
+  slot. Per-beat grids declared in `blueprint.yaml` (Stream 4) live
+  entirely inside this slot. See the "Content Area" section below for
+  the locked geometry + tokens.
 
 **Component pattern (Session B cross-cutting #7):** most library
 components are **one component with a `variant` prop + a `density` prop**
@@ -638,6 +642,83 @@ const BilingualHeadline = ({
 Default language stance stays **Latin-only**; bilingual is per-deck
 opt-in (Session A Language lock). Use `single-latin` unless a deck
 explicitly engages Japanese.
+
+## Content Area (Stream 4)
+
+A fixed-geometry rectangle every content slide reserves between the
+action title and the source/folio strip. This is the canvas the
+blueprint stage declares grids inside.
+
+### Locked geometry
+
+- **Width** — `1720 px` (canvas 1920 minus the 100 px L / R padding).
+- **Height** — `720 px`. Sits between a guaranteed action-title +
+  optional sub region above (clamped to 2 lines of Prata @ 54 px +
+  one optional sub line of body @ 23 px) and a guaranteed 40 px
+  source-line strip + folio below.
+- **Action-title clamp** — 2 lines max (`-webkit-line-clamp: 2;
+  overflow: hidden; text-overflow: ellipsis;`). A 3-line title is
+  a content problem, not a layout one — surface it.
+- **Source-strip fixed height** — 40 px above the folio. Always
+  rendered; if no source, render an empty (but still 40 px tall)
+  strip. This is what makes the 720 px height **absolute across
+  slides** — no drift.
+
+### Tokens (per-deck scoped, like the rest of `--tk-*`)
+
+```css
+--tk-content-w: 1720;        /* px; absolute */
+--tk-content-h: 720;         /* px; absolute */
+--tk-content-grid-cols: 12;  /* default; per-beat override allowed */
+--tk-content-grid-rows: 6;   /* default; per-beat override allowed */
+--tk-content-grid-gap: 24;   /* px between cells */
+```
+
+These live on the per-slide `TK_LIGHT` / `TK_DARK` wrapper so a deck
+can override the default grid resolution per-beat (e.g. 16 × 8 for a
+denser blueprint) without re-defining the geometry.
+
+### Frame contract
+
+`themes/taikyoku/layouts/Frame.tsx` (Stream 2) owns the chrome. The
+body region IS the ContentArea slot:
+
+```
+┌─────────────────────────────────────────────────────────┐  ← 0 px
+│ 72 px top padding                                        │
+│ ┌──── eyebrow strip (border-bottom: 1px ink) ─────────┐  │
+│ │  …                                                   │  │
+│ └──────────────────────────────────────────────────────┘  │
+│ 26 px gap                                                 │
+│ ┌──── action title (Prata 54, 2 lines max) ───────────┐  │
+│ │  …                                                   │  │
+│ └──────────────────────────────────────────────────────┘  │
+│ optional 23 px sub line                                   │
+│ 30 px gap                                                 │
+│ ┌──── ContentArea — 1720 × 720, grid lives here ──────┐  │
+│ │  (children — Rail / Band / TwoUp / DenseGrid /      │  │
+│ │   blueprint custom grid; shadows fill cells)        │  │
+│ └──────────────────────────────────────────────────────┘  │
+│ 18 px gap                                                 │
+│ ┌──── source strip (border-top: 1px line, 40 px) ─────┐  │
+│ │  source line                              folio      │  │
+│ └──────────────────────────────────────────────────────┘  │
+│ 56 px bottom padding                                      │
+└─────────────────────────────────────────────────────────┘  ← 1080 px
+```
+
+The blueprint stage assumes this geometry: shadow `span: {col, row}`
+ranges map 1:1 to cells of an 1720 × 720 grid divided by
+`--tk-content-grid-cols` × `--tk-content-grid-rows`. Custom blueprints
+may override the grid resolution per beat; the **outer 1720 × 720
+rectangle is invariant**.
+
+### Why this is locked
+
+"Col 1..4" means the same pixel rectangle on every slide. That's the
+precision the blueprint review surface needs to be trustworthy. Drift
+this and the wireframe + final-deck pages stop matching, and the
+blueprint stops being a useful review artifact.
 
 ## Layouts (Phase 12)
 

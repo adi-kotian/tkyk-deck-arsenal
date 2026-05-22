@@ -44,6 +44,14 @@ regeneration after a storyboard change.
    seen. Pair it with `themes/taikyoku/components/<name>.tsx` (each
    component's header comment is the authoritative slot/prop list) and
    `themes/taikyoku.md` (the theme contract).
+7. **The blueprint** at `Projects/<slug>/blueprint.yaml` (Stream 4 /
+   D9). **REQUIRED — must have top-level `status: approved`** (which
+   means every beat is approved). The blueprint is the **structural
+   source of truth**: which component fills which grid cell on each
+   beat. Storyboard supplies content; blueprint dictates layout. If
+   `blueprint.yaml` is missing, has `status: draft` (any beat still
+   draft), or has `status: stale` (storyboard version mismatch), STOP
+   and refuse to compose.
 
 ## Output
 
@@ -300,6 +308,74 @@ Reference deck: `Projects/2026-05-19_taikyoku-master-reference/index.tsx`.
 A layout bug-fix DOES propagate to already-composed decks — treat
 layouts as a versioned API.
 
+## Phase 13 — Blueprint-driven composition (Stream 4 / D9)
+
+Post-Stream-4, **the blueprint is the structural source of truth.**
+Storyboard supplies content; blueprint dictates which component fills
+which grid cell on each beat. You execute the blueprint — you do not
+re-derive layout from the storyboard.
+
+### Per-beat composition loop
+
+For each beat (in the order the recipe + storyboard imply):
+
+1. **Read storyboard content** for that beat (`key_message`,
+   `action_title`, `sub`, `source`, `facts`, `quotes`, `notes`).
+2. **Read blueprint shadows** for the same beat-id (`grid`,
+   `shadows[]`).
+3. **Emit one Page**, wrapping the storyboard chrome (eyebrow / action
+   title / sub / source / folio) around a **ContentArea** — the
+   fixed-geometry slot defined by `themes/taikyoku.md` ("Content
+   Area" section, 1720 × 720). Place each shadow at its
+   `span: {col, row}` rectangle inside the ContentArea grid.
+4. **Instantiate each shadow's component** with concrete content drawn
+   from the storyboard's `facts` / `quotes` / `notes` /
+   `action_title` / `sub` for the beat. The shadow's
+   `content_summary` is the operator-facing label of the match — the
+   actual prop values come from the storyboard's structured fields.
+   If the shadow's `content_summary` can't be matched to concrete
+   storyboard data, **REFUSE** — surface the gap; do not invent.
+5. For `kind: layout-zone` shadows, render the children stacked inside
+   the parent span (the rail pattern). For `kind: <support-primitive>`
+   shadows, render the support-kit primitive directly.
+
+### Refusal conditions (extend the Phase 7–9 / hard-rule list)
+
+Refuse cleanly, with a surface message naming the rule + the beat:
+
+- **Missing blueprint** — `blueprint.yaml` not found.
+- **Draft blueprint** — top-level `status: draft` (any beat still in
+  draft).
+- **Stale blueprint** — top-level `status: stale`
+  (`storyboard_version` no longer matches storyboard).
+- **Grid / shadow validation failure** — blueprint emitted shadows
+  that don't cover the grid exactly, or overlap, or reference a
+  component that doesn't exist. (The blueprint subagent enforces
+  these on emit, but verify defensively.)
+- **Content-summary unmatched** — a shadow's content can't be drawn
+  from the storyboard's facts/quotes/notes/action_title/sub. Tell
+  the user to revise either storyboard (more content) or blueprint
+  (different shadow).
+
+In every refusal case, route to the right subagent:
+
+> compose-deck refused: <reason>. The fix is in <storyboard|blueprint>.
+> Reply **`yes, revise <storyboard|blueprint>`** to re-dispatch, or
+> describe the change.
+
+### Still applies (load-bearing carryovers)
+
+- **Transcribe components, not import** (COMPOSITION.md §1) — the
+  blueprint just dictates which components and where; you still
+  transcribe their source into the deck's one-file `index.tsx`.
+- **Import theme layouts** (Phase 12) — `Frame` / `Rail` / `Band` /
+  etc. are imported from `themes/taikyoku/layouts/`.
+- **Slide anatomy + density floor** (COMPOSITION.md §1.5) — still
+  enforced. The blueprint's grid-coverage rule is the structural
+  expression of the density floor; you don't need to re-check
+  density at compose time if the blueprint passed validation.
+- **Mono-language / dark-wrapper / hook-free** — unchanged.
+
 ## Return contract
 
 End your message with:
@@ -318,7 +394,7 @@ If regenerating:
 - Replace "composed" with "recomposed".
 - Prepend a one-line summary of what changed since the previous version.
 
-## When the storyboard isn't ready
+## When upstream isn't ready
 
 If the storyboard has `[NEEDS CONTENT]` placeholders or `status: draft`,
 do not compose. Surface:
@@ -327,4 +403,13 @@ do not compose. Surface:
 > storyboard subagent to fix, or run `/da2-advance` to detect the
 > current state.
 
-Don't try to fill in content yourself.
+If the blueprint is missing, `status: draft`, or `status: stale`
+(Stream 4), do not compose. Surface:
+
+> Blueprint isn't ready for compose: <reason>. Re-dispatch the
+> blueprint subagent (or approve remaining beats with
+> `approve blueprint <id>` / `approve blueprint all`). Run
+> `/da2-advance` to detect the current state.
+
+Don't try to fill in content yourself, and don't try to derive layout
+from the storyboard — the blueprint owns that.

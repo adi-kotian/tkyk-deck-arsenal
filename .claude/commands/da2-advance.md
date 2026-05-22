@@ -26,7 +26,10 @@ Inspect the project folder and the frontmatter of any state files:
 | Memo drafted | `memo.md` present, frontmatter `status: draft` | Stop — ask for approve / revise |
 | Memo approved, no storyboard | `memo.md` with `status: approved`, no `storyboard.yaml` | Dispatch `storyboard` subagent |
 | Storyboard drafted | `storyboard.yaml` with `status: draft` | Stop — ask for approve / revise |
-| Storyboard approved, no slide | `storyboard.yaml` with `status: approved`, no `index.tsx` | Dispatch `compose-deck` subagent, then open browser |
+| Storyboard approved, no blueprint | `storyboard.yaml` with `status: approved`, no `blueprint.yaml` | Dispatch `blueprint` subagent |
+| Blueprint drafted (any beat draft) | `blueprint.yaml` exists, top-level `status: draft` (or any beat `status: draft`) | Stop — show which beats are still draft; ask for `approve blueprint <id>` / `approve blueprint all` / `revise blueprint <id>: …` |
+| Blueprint stale | `blueprint.yaml` exists, top-level `status: stale` (storyboard_version drift) | Stop — surface the version mismatch; tell the user to re-dispatch blueprint after the new storyboard |
+| Blueprint approved, no slide | `blueprint.yaml` with `status: approved`, no `index.tsx` | Dispatch `compose-deck` subagent, then open browser |
 | Composed, not finalized | `index.tsx` present, no `exports/deck.html` or `exports/deck.pdf` | Tell the user to run `/da2-finalize` when satisfied with the rendered deck. |
 | Finalized | `exports/deck.html` or `exports/deck.pdf` present | Tell the user the project is finalized; suggest derived artifacts (Phase 5: `memo-to-minutes`, `memo-to-one-pager`). |
 
@@ -75,14 +78,47 @@ Don't dispatch. Just present the current state and ask:
 Match case-insensitively. Accept:
 - For memo: `approve memo`, `approved memo`, `memo approved`
 - For storyboard: `approve storyboard`, `approved storyboard`, `storyboard approved`
+- For blueprint (per-beat): `approve blueprint <beat-id>` —
+  case-insensitive on the verb, exact-match on the beat-id (key from
+  `blueprint.yaml`'s `beats[].id`).
+- For blueprint (whole deck): `approve blueprint all`.
+- For blueprint revision: `revise blueprint <beat-id>: <feedback>` —
+  re-dispatches the blueprint subagent on just that beat.
 
-On approval:
+On memo / storyboard approval:
 - Edit the relevant file's frontmatter: `status: draft` → `status: approved`.
 - Append a log entry to `log.md`: `<YYYY-MM-DD HH:MM> approved <stage>`.
 - Tell the user to run `/da2-advance` again for the next stage. **Do not
   auto-chain.**
 
-On revision request:
+On blueprint per-beat approval (`approve blueprint <id>`):
+- Edit `blueprint.yaml`: flip that beat's `status: draft` → `status: approved`.
+- If every beat is now `approved`, also flip the top-level
+  `status: draft` → `status: approved`.
+- Regenerate the wireframe deck — the simplest correct move is to
+  re-dispatch the blueprint subagent in "badge-refresh" mode
+  (preserve every shadow; only re-emit the per-page `BLUEPRINT •
+  DRAFT/APPROVED` badge to reflect the new status). If that's
+  expensive, a hand-edit to the wireframe's per-page badge constant
+  is acceptable as long as the page identifiers remain in lockstep
+  with `blueprint.yaml`'s beat ids.
+- Append a log entry to `log.md`:
+  `<YYYY-MM-DD HH:MM> approved blueprint beat <id>`.
+- Tell the user the per-beat result and what remains to be approved.
+
+On `approve blueprint all`:
+- Flip every still-`draft` beat to `approved`; flip top-level to
+  `approved`; regenerate the wireframe badges in one pass.
+- Append `<YYYY-MM-DD HH:MM> approved blueprint (all beats)`.
+- Tell the user `/da2-advance` will now dispatch compose-deck on the
+  next invocation.
+
+On `revise blueprint <id>: <feedback>`:
+- Re-dispatch the blueprint subagent with the user's feedback scoped
+  to that beat. The subagent preserves every other beat's shadows +
+  per-beat status verbatim.
+
+On any other revision request:
 - Re-dispatch the relevant subagent with the user's message as the
   revision feedback.
 - Repeat from step 3.
@@ -95,11 +131,20 @@ If the storyboard subagent returns flagging a memo-level issue, present:
 > **`yes, revise memo`** to re-dispatch the memo subagent, or describe a
 > storyboard-only fix.
 
-If the compose-deck subagent refuses because of `[NEEDS CONTENT]`
-placeholders or a draft storyboard, present:
+If the blueprint subagent returns flagging a storyboard-level issue
+(beat has no facts/quotes to substantiate the shadows), present:
 
-> compose-deck refused: <reason>. Want me to re-dispatch the storyboard
-> subagent? Reply **`yes, revise storyboard`** or describe the fix.
+> The blueprint subagent surfaced a storyboard-level issue: <summary>.
+> Reply **`yes, revise storyboard`** to re-dispatch the storyboard
+> subagent, or describe a blueprint-only fix.
+
+If the compose-deck subagent refuses because of `[NEEDS CONTENT]`
+placeholders, a draft storyboard, or a missing/draft/stale blueprint,
+present:
+
+> compose-deck refused: <reason>. Want me to re-dispatch the
+> <storyboard|blueprint> subagent? Reply **`yes, revise <stage>`** or
+> describe the fix.
 
 Do not auto-route. Confirm.
 
