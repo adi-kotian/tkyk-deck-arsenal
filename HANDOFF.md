@@ -56,6 +56,7 @@ dev-server's discovery path.
 | `briefs/stream-1-font-dedupe.md` | font workflow audit + small CC prompt (no real duplication exists) | new 2026-05-19 |
 | `briefs/stream-2-layout-promotion.md` | **CC prompt** — promote layout primitives into the theme | new 2026-05-19 (Stream 2 staged) |
 | `briefs/stream-3-feedback-loop.md` | design doc — inspector-comment triage, render smoke-check, marker convention | new 2026-05-19 (Stream 3 design) |
+| `briefs/stream-4-blueprint-stage.md` | **CC prompt** — new pipeline stage between storyboard and compose: per-beat content-grid blueprints + per-beat approval + companion wireframe deck | new 2026-05-19 (Stream 4 staged) |
 | `themes/taikyoku/components/*.tsx` | 19 Tier-1 components | header comment per file is the slot/prop truth |
 | `Projects/2026-05-19_taikyoku-master-reference/` | the **visual reference catalogue** (v2 — dense composition) | only live deck |
 
@@ -155,6 +156,33 @@ the theme (stable infrastructure, consistent across decks);
 components remain **transcribed** (per-deck specialisation, frozen-
 with-deck). REFINEMENT.md will gain a Phase-12 appendix entry when
 this lands.
+
+### Stream 4 — Blueprint stage (new pipeline layer between storyboard and compose) — **prompt staged**
+
+Adds a `blueprint` subagent between storyboard and compose-deck.
+Storyboard simplifies to pure content (drops `primary` / `supporting`
+/ `layout`). The blueprint subagent emits per-beat **content-shadow
+grids** inside a fixed **content area** (1720 × 720, locked theme
+primitive) — each cell naming a component + a one-line content
+summary. It also writes a **companion wireframe deck** at
+`Projects/<slug>-blueprint/` served in the dev server, so the user
+reviews each beat as an empty-newspaper layout before any content
+rendering happens.
+
+**Per-beat approval** (`approve blueprint <beat-id>` /
+`approve blueprint all`). compose-deck waits until every beat is
+approved, then composes from the blueprint as structural truth and
+the storyboard as content truth.
+
+**Prompt:** `briefs/stream-4-blueprint-stage.md`. Ten phases
+(A–J) with an explicit STOP after Phase A for user confirmation of
+the storyboard contract rewrite (D2 is the most disruptive piece).
+Includes the full `blueprint.yaml` schema + state-machine extension
++ wireframe-deck spec + ContentArea theme contract.
+
+**Recommended order:** Stream 2 → Stream 4 → Stream 3. Stream 2 gives
+ContentArea a clean home; Stream 4 builds on it; Stream 3 polishes
+the loop.
 
 ### Stream 3 — Tighter inspector → apply → verify loop — **design ready**
 
