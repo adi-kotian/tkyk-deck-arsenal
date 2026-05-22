@@ -31,6 +31,9 @@ import { BioCard } from '../../themes/taikyoku/components/bio-card';
 import { ImageLed } from '../../themes/taikyoku/components/image-led';
 import { LogoCluster } from '../../themes/taikyoku/components/logo-cluster';
 import { Closing } from '../../themes/taikyoku/components/closing';
+import { Frame, Structural, Rail, Band, TwoUp, AnchoredRail, DenseGrid,
+         Cards, Stat, Insight, LList, Annote }
+  from '../../themes/taikyoku/layouts';
 
 const TK_LIGHT: Record<string,string> = {
   '--tk-grad-cool':'#A6C9EB','--tk-grad-warm':'#FFE9BF','--tk-grad-cool-pos':'12%',
@@ -67,107 +70,6 @@ const INK=V('ink','#0A0A0A'), SOFT=V('ink-soft','#3F3F3F'), MUT=V('ink-muted','#
 const Slide = ({ d, children }: { d?: boolean; children: ReactNode }) => (
   <><style>{KF}</style>
     <div style={{ ...(d?TK_DARK:TK_LIGHT), width:'100%', height:'100%' } as CSSProperties}>{children}</div></>
-);
-
-// ── Frame: chrome (eyebrow) + action title + body + source + folio ──────────
-const Frame = ({ eyebrow, meta, action, sub, source, folio, jp, children }:
-  { eyebrow:string; meta?:string; action:string; sub?:string; source:string; folio:string; jp?:boolean; children:ReactNode }) => (
-  <div style={{ width:'100%', height:'100%', background:PAPER, color:INK, fontFamily:Fn.body,
-    padding:'72px 100px 56px', boxSizing:'border-box', display:'flex', flexDirection:'column', overflow:'hidden' }}>
-    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline',
-      borderBottom:`1px solid ${INK}`, paddingBottom:14, fontFamily:Fn.caps, fontSize:20,
-      letterSpacing:'0.22em', textTransform:'uppercase', animation:'600ms ease-out both tk-fadeUp' }}>
-      <span style={{ display:'inline-flex', alignItems:'center', gap:14 }}>
-        <span aria-hidden style={{ width:11, height:11, background:ACC, display:'inline-block' }} />
-        <span style={{ fontWeight:700 }}>{eyebrow}</span></span>
-      <span style={{ color:MUT, fontSize:18, letterSpacing:'0.16em' }}>{meta ?? 'Taikyoku · master reference'}</span>
-    </div>
-    <div style={{ marginTop:26, animation:'600ms ease-out 120ms both tk-fadeUp' }}>
-      <h2 style={{ fontFamily: jp ? Fn.jpD : Fn.display, fontSize:54, fontWeight: jp?600:400,
-        lineHeight: jp?1.12:1.06, letterSpacing:'-0.02em', margin:0, color:INK, maxWidth:1500 }}>{action}</h2>
-      {sub && <p style={{ fontFamily: jp ? Fn.jpB : Fn.body, fontSize:23, lineHeight: jp?1.7:1.4,
-        color:SOFT, margin:'12px 0 0', maxWidth:1400 }}>{sub}</p>}
-    </div>
-    <div style={{ flex:1, minHeight:0, overflow:'hidden', marginTop:30 }}>{children}</div>
-    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline',
-      borderTop:`1px solid ${LINE}`, paddingTop:14, marginTop:18, fontFamily:Fn.mono, fontSize:15,
-      color:MUT, letterSpacing:'0.02em' }}>
-      <span>{source}</span>
-      <span style={{ fontFamily:Fn.caps, letterSpacing:'0.16em', textTransform:'uppercase' }}>{folio}</span>
-    </div>
-  </div>
-);
-// support kit
-const Stat = ({ v, l, c }:{v:string;l:string;c?:string}) => (
-  <div style={{ background:TINT, borderTop:`1px solid ${LINE}`, padding:'20px 22px',
-    animation:'600ms cubic-bezier(0.2,0.7,0.3,1) 240ms both tk-rise' }}>
-    <div style={{ fontFamily:Fn.mono, fontVariantNumeric:'tabular-nums', fontWeight:700, fontSize:46, color:INK, lineHeight:1 }}>{v}</div>
-    <div style={{ fontFamily:Fn.caps, fontSize:15, letterSpacing:'0.16em', textTransform:'uppercase', color:MUT, marginTop:10 }}>{l}</div>
-    {c && <div style={{ fontFamily:Fn.body, fontSize:18, color:SOFT, marginTop:6 }}>{c}</div>}
-  </div>
-);
-const Insight = ({ children }:{children:ReactNode}) => (
-  <div style={{ display:'flex', gap:14, alignItems:'flex-start',
-    animation:'600ms ease-out 360ms both tk-fadeUp' }}>
-    <span aria-hidden style={{ width:10, height:10, background:ACC, marginTop:9, flex:'0 0 auto' }} />
-    <div style={{ fontFamily:Fn.body, fontSize:22, lineHeight:1.45, color:INK }}>{children}</div>
-  </div>
-);
-const LList = ({ items }:{items:[string,string][]}) => (
-  <div style={{ display:'flex', flexDirection:'column', animation:'600ms ease-out 460ms both tk-fadeUp' }}>
-    {items.map(([k,v],i)=>(
-      <div key={i} style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline',
-        borderTop:`1px solid ${LINE}`, padding:'13px 0', fontFamily:Fn.caps, fontSize:17,
-        letterSpacing:'0.14em', textTransform:'uppercase', color:MUT }}>
-        <span>{k}</span><span style={{ fontFamily:Fn.mono, color:INK, letterSpacing:'0.02em' }}>{v}</span></div>))}
-  </div>
-);
-const Annote = ({ children }:{children:ReactNode}) => (
-  <div style={{ fontFamily:Fn.display, fontStyle:'italic', fontSize:24, lineHeight:1.4, color:SOFT,
-    animation:'600ms ease-out 400ms both tk-fadeUp' }}>{children}</div>
-);
-const Rail = ({ primary, rail }:{primary:ReactNode;rail:ReactNode}) => (
-  <div style={{ display:'flex', gap:48, height:'100%' }}>
-    <div style={{ flex:'1 1 66%', minWidth:0, minHeight:0, display:'block' }}>{primary}</div>
-    <div style={{ flex:'1 1 34%', minWidth:0, display:'flex', flexDirection:'column', gap:22, justifyContent:'center' }}>{rail}</div>
-  </div>
-);
-// Structural: for components that own their eyebrow+heading (deck-contents,
-// etc.) — no Frame echo, the component gets the room, slim support + footer.
-const Structural = ({ source, folio, support, children }:
-  { source:string; folio:string; support?:ReactNode; children:ReactNode }) => (
-  <div style={{ width:'100%', height:'100%', background:PAPER, color:INK, fontFamily:Fn.body,
-    padding:'72px 100px 56px', boxSizing:'border-box', display:'flex', flexDirection:'column', overflow:'hidden' }}>
-    <div style={{ flex:1, minHeight:0, display:'flex' }}>{children}</div>
-    {support && <div style={{ flex:'0 0 auto', display:'flex', gap:24, marginTop:26 }}>{support}</div>}
-    <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline',
-      borderTop:`1px solid ${LINE}`, paddingTop:14, marginTop:18, fontFamily:Fn.mono, fontSize:15,
-      color:MUT, letterSpacing:'0.02em' }}>
-      <span>{source}</span>
-      <span style={{ fontFamily:Fn.caps, letterSpacing:'0.16em', textTransform:'uppercase' }}>{folio}</span></div>
-  </div>
-);
-const Cards = ({ items }:{items:[string,string][]}) => (
-  <>{items.map(([k,b],i)=>(
-    <div key={i} style={{ flex:1, background:TINT, borderTop:`1px solid ${LINE}`, padding:'18px 20px',
-      animation:`600ms cubic-bezier(0.2,0.7,0.3,1) ${240+i*120}ms both tk-rise` }}>
-      <div style={{ fontFamily:Fn.caps, fontSize:14, letterSpacing:'0.16em', textTransform:'uppercase', color:ACC }}>{k}</div>
-      <div style={{ fontFamily:Fn.body, fontSize:20, lineHeight:1.4, color:INK, marginTop:8 }}>{b}</div></div>))}</>
-);
-const Band = ({ primary, cells }:{primary:ReactNode;cells:ReactNode[]}) => (
-  <div style={{ display:'flex', flexDirection:'column', gap:26, height:'100%' }}>
-    <div style={{ flex:'1 1 64%', minWidth:0, minHeight:0, display:'block' }}>{primary}</div>
-    <div style={{ flex:'0 0 auto', display:'flex', gap:24 }}>{cells.map((c,i)=><div key={i} style={{ flex:1 }}>{c}</div>)}</div>
-  </div>
-);
-const TwoUp = ({ a, b, take }:{a:ReactNode;b:ReactNode;take:string}) => (
-  <div style={{ display:'flex', flexDirection:'column', gap:24, height:'100%' }}>
-    <div style={{ flex:1, minHeight:0, display:'flex', gap:40 }}>
-      <div style={{ flex:1, minWidth:0, minHeight:0, display:'block' }}>{a}</div>
-      <div style={{ flex:1, minWidth:0, minHeight:0, display:'block' }}>{b}</div></div>
-    <div style={{ flex:'0 0 auto', borderTop:`1px solid ${LINE}`, paddingTop:16, fontFamily:Fn.body,
-      fontSize:24, color:INK, fontWeight:500 }}>{take}</div>
-  </div>
 );
 
 const Chart = () => (
