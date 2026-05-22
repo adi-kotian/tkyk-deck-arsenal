@@ -164,10 +164,11 @@ commit_if_staged "docs: reconcile taikyoku.md + scripts/commands/recipe to curre
   doctrine + image-asset convention."
 
 # ─── 7. Add Stream 1/2/3 briefs + this cleanup script ─────────────────────────
-echo "[7/8] add stream-1/2/3 briefs + da2-cleanup-commits.sh"
+echo "[7/8] add stream-1/2/3/4 briefs + da2-cleanup-commits.sh"
 git add briefs/stream-1-font-dedupe.md \
         briefs/stream-2-layout-promotion.md \
         briefs/stream-3-feedback-loop.md \
+        briefs/stream-4-blueprint-stage.md \
         scripts/da2-cleanup-commits.sh
 commit_if_staged "docs(briefs)+chore(scripts): add stream-1/2/3 briefs + cleanup-commits script
 
@@ -187,6 +188,13 @@ commit_if_staged "docs(briefs)+chore(scripts): add stream-1/2/3 briefs + cleanup
   verify loop. Four proposals (comment-prefix triage / instance-local
   marker anchors / render smoke-check / batched feedback rounds).
   Ship P1 + P3.a first if exactly one round of work goes into this.
+- stream-4-blueprint-stage.md: CC prompt for a new pipeline stage
+  between storyboard and compose. Per-beat content-shadow grids
+  inside a fixed content area (1720×720 theme primitive), per-beat
+  approval, companion wireframe deck. Storyboard simplifies to pure
+  content; blueprint owns layout. 10 phases (A-J) with explicit STOP
+  after Phase A for user confirmation of the storyboard contract
+  rewrite.
 - scripts/da2-cleanup-commits.sh: the script that landed these
   commits (self-referencing — its prior runs are this very git log)."
 
