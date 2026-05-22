@@ -11,6 +11,11 @@ dist/
 # Logs
 *.log
 
+# Stream 3 — dev-server tee'd log (sandbox-local; scripts/da2-dev.sh).
+# Already covered by *.log above; called out so the convention is
+# discoverable from .gitignore.
+engine/.dev-server.log
+
 # OS
 .DS_Store
 
